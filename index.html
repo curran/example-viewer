@@ -4,21 +4,29 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
     <title>Example Viewer</title>
-    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.5.0/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.23.0/codemirror.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.23.0/codemirror.min.css">
   </head>
   <body>
     <script>
-      d3.select("body")
-        .append("h1")
-          .text("Hello");
+      
+      var textarea = d3.select("body")
+        .append("textarea")
+        .node();
+
+      var editor = CodeMirror.fromTextArea(textarea, {
+        lineNumbers: true
+      });
 
       window.addEventListener("keyup", function (){
         d3.request("save")
-          .header("Content-Type","application/json")
+          .header("Content-Type", "application/json")
           .post(JSON.stringify({foo:5}), function (){
             console.log("saved");
           });
       });
+
     </script>
   </body>
 </html>
