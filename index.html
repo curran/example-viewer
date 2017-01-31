@@ -11,6 +11,14 @@
       d3.select("body")
         .append("h1")
           .text("Hello");
+
+      window.addEventListener("keyup", function (){
+        d3.request("save")
+          .header("Content-Type","application/json")
+          .post(JSON.stringify({foo:5}), function (){
+            console.log("saved");
+          });
+      });
     </script>
   </body>
 </html>
