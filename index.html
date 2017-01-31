@@ -19,13 +19,22 @@
         lineNumbers: true
       });
 
-      window.addEventListener("keyup", function (){
+      editor.on("change", function (){
+        save(editor.getValue());
+      });
+
+      function save(content){
+
+        var data = {
+          content: content
+        };
+
         d3.request("save")
           .header("Content-Type", "application/json")
-          .post(JSON.stringify({foo:5}), function (){
+          .post(JSON.stringify(data), function (){
             console.log("saved");
           });
-      });
+      }
 
     </script>
   </body>
