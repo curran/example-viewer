@@ -4,6 +4,18 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
     <title>Example Viewer</title>
+
+    <!-- For offline development (first run fetchLibs.sh) -->
+    <script src="/libs/d3.min.js"></script>
+    <script src="/libs/codemirror.min.js"></script>
+    <script src="/libs/javascript.min.js"></script>
+    <script src="/libs/css.min.js"></script>
+    <script src="/libs/xml.min.js"></script>
+    <script src="/libs/htmlmixed.min.js"></script>
+    <link rel="stylesheet" href="/libs/codemirror.min.css">
+    
+    <!-- For cloud hosting -->
+    <!--
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.5.0/d3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.23.0/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.23.0/mode/javascript/javascript.min.js"></script>
@@ -11,6 +23,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.23.0/mode/xml/xml.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.23.0/mode/htmlmixed/htmlmixed.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.23.0/codemirror.min.css">
+    -->
+
     <style>
       body { margin: 0px; }
       .CodeMirror { font-size: 3rem; height: auto; }
@@ -23,36 +37,59 @@
       var body = d3.select("body");
 
       var header = body.append("div")
-        .style("margin-left", "2rem")
-        .style("margin-top", "2px")
+        .style("margin", "16px")
+        .style("font-size", "3rem")
         .style("font-family", "Sans-Serif");
-
       var breadcrumbs = header.append("div")
-        .style("color", "gray")
-        .style("font-size", "2rem");
-
+        .style("color", "#999");
       var title = header.append("div")
-        .style("font-size", "3rem");
+        .style("font-size", "2em");
 
       breadcrumbs.text("Unit 1 / Module 1 / Example 1");
+
       title.text("Hello HTML");
 
-      var code = body.append("div").attr("class", "code");
-      var editor = CodeMirror(code.node(), { lineNumbers: true, mode: "htmlmixed" });
+      var code = body.append("div")
+        .call(shadow);
 
-      editor.on("change", function (){
-        save(editor.getValue());
+      var editor = CodeMirror(code.node(), {
+        lineNumbers: false,
+        mode: "htmlmixed"
       });
 
+      var iframe = body.append("iframe")
+        .style("position", "fixed")
+        .style("top", "0px")
+        .style("right", "0px")
+        .style("background-color", "white")
+        .style("z-index", "3")
+        .attr("width", "960")
+        .attr("height", "500")
+        .attr("frameborder", "0px")
+        .call(shadow);
+
+      editor.on("change", function (){
+        var html = editor.getValue()
+        save(html);
+        iframe.attr("srcdoc", html);
+      });
+
+      d3.request("example.html").get(function (xhr){
+        editor.setValue(xhr.responseText);
+      });
+
+
       function save(content){
-
         var data = { content: content };
-
         d3.request("save")
           .header("Content-Type", "application/json")
           .post(JSON.stringify(data), function (){
             console.log("saved");
           });
+      }
+
+      function shadow(selection){
+        return selection.style("box-shadow", "1px 1px 4px grey");
       }
 
     </script>
