@@ -37,31 +37,29 @@
       var body = d3.select("body");
 
       var header = body.append("div")
-        .style("margin", "16px")
-        .style("font-size", "3rem")
-        .style("font-family", "Sans-Serif");
-      var breadcrumbs = header.append("div")
-        .style("color", "#999");
-      var title = header.append("div")
-        .style("font-size", "2em");
+            .style("margin", "16px")
+            .style("font-size", "3rem")
+            .style("font-family", "Sans-Serif"),
+          breadcrumbs = header.append("div")
+            .style("color", "#999"),
+          title = header.append("div")
+            .style("font-size", "2em");
 
+      // TODO make this dynamic.
       breadcrumbs.text("Unit 1 / Module 1 / Example 1");
 
-      var code = body.append("div")
-        .call(shadow);
+      // Set up the editor.
+      var code = body.append("div").call(shadow).node(),
+          editor = CodeMirror(code, { lineNumbers: false, mode: "htmlmixed" });
 
-      var editor = CodeMirror(code.node(), {
-        lineNumbers: false,
-        mode: "htmlmixed"
-      });
-
+      // Set up the running example.
       var iframe = body.append("iframe")
         .style("position", "fixed")
         .style("top", "0px")
         .style("right", "0px")
         .style("background-color", "white")
-        .style("z-index", "3")
-        .attr("width", "960")
+        .style("z-index", "3") // CodeMirror's z-index is 2
+        .attr("width", "960") // 960 X 500 is standard for bl.ocks.org
         .attr("height", "500")
         .attr("frameborder", "0px")
         .attr("marginwidth", "0")
@@ -69,31 +67,51 @@
         .attr("scrolling", "no")
         .call(shadow);
 
+      // Respond to changes made in the editor.
       editor.on("change", function (){
+
+        // Get the new text content.
         var html = editor.getValue()
-        save(html);
+
+        // Run the example.
         iframe.attr("srcdoc", html);
-        updateTitle(html);
-      });
 
-      d3.request("example.html").get(function (xhr){
-        var html = xhr.responseText
-        editor.setValue(html);
-      });
-
-      function updateTitle(html){
+        // Update the title.
         title.text(html.match(/title>(.*?)</)[1]);
-      }
+      });
 
-      function save(content){
-        var data = { content: content };
-        d3.request("save")
-          .header("Content-Type", "application/json")
-          .post(JSON.stringify(data), function (){
-            console.log("saved");
-          });
-      }
+      // Load the initial content (triggers editor.on("change")).
+      d3.request("example.html").get(function (xhr){
+        editor.setValue(xhr.responseText);
+      });
 
+      // Listen for global key presses.
+      window.addEventListener("keydown", function (event){
+        var S = 83;
+
+        // Save the content to the server on CTRL + S
+        if(event.ctrlKey && event.which === S){
+
+          // Without this, the browser will try to save the page.
+          event.preventDefault();
+
+          // Prepare the body of the POST request.
+          var data = {
+            content: editor.getValue()
+          };
+
+          // Issue a POST request to the server API.
+          console.log("saving...");
+          d3.request("save")
+            .header("Content-Type", "application/json")
+            .post(JSON.stringify(data), function (){
+              console.log("saved");
+            });
+          }
+      });
+
+      // Adds a shadow effect to the given D3 selection.
+      // Inspired by Material Design "Cards".
       function shadow(selection){
         return selection.style("box-shadow", "1px 1px 4px grey");
       }
