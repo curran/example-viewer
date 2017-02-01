@@ -12,45 +12,33 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.23.0/mode/htmlmixed/htmlmixed.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.23.0/codemirror.min.css">
     <style>
-
-      body {
-        margin: 0px;
-      }
-
-      .CodeMirror {
-        font-size: 3rem;
-        height: auto;
-      }
-
-      .header {
-        margin-left: 2rem;
-        margin-top: 2px;
-        font-family: Sans-Serif;
-        font-size: 2rem;
-        color: gray;
-      }
-
-      .title {
-        color: black;
-        font-size: 3rem;
-      }
-
+      body { margin: 0px; }
+      .CodeMirror { font-size: 3rem; height: auto; }
     </style>
   </head>
   <body>
 
-    <div class="header">
-      <div>Unit 1 / Module 1 / Example 1</div>
-      <div class="title">Hello HTML</div>
-    </div>
-    <div class="code"></div>
-
     <script>
-      
-      var editor = CodeMirror(d3.select(".code").node(), {
-        lineNumbers: true,
-        mode: "htmlmixed"
-      });
+
+      var body = d3.select("body");
+
+      var header = body.append("div")
+        .style("margin-left", "2rem")
+        .style("margin-top", "2px")
+        .style("font-family", "Sans-Serif");
+
+      var breadcrumbs = header.append("div")
+        .style("color", "gray")
+        .style("font-size", "2rem");
+
+      var title = header.append("div")
+        .style("font-size", "3rem");
+
+      breadcrumbs.text("Unit 1 / Module 1 / Example 1");
+      title.text("Hello HTML");
+
+      var code = body.append("div").attr("class", "code");
+      var editor = CodeMirror(code.node(), { lineNumbers: true, mode: "htmlmixed" });
 
       editor.on("change", function (){
         save(editor.getValue());
@@ -58,9 +46,7 @@
 
       function save(content){
 
-        var data = {
-          content: content
-        };
+        var data = { content: content };
 
         d3.request("save")
           .header("Content-Type", "application/json")
