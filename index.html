@@ -11,15 +11,27 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.23.0/mode/xml/xml.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.23.0/mode/htmlmixed/htmlmixed.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.23.0/codemirror.min.css">
+    <style>
+
+      body {
+        margin: 0px;
+      }
+
+      .CodeMirror {
+        font-size: 3em;
+        height: auto;
+      }
+
+    </style>
   </head>
   <body>
     <script>
       
-      var textarea = d3.select("body")
-        .append("textarea")
+      var editorContainer = d3.select("body")
+        .append("div")
         .node();
 
-      var editor = CodeMirror.fromTextArea(textarea, {
+      var editor = CodeMirror(editorContainer, {
         lineNumbers: true,
         mode: "htmlmixed"
       });
