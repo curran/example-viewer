@@ -18,20 +18,36 @@
       }
 
       .CodeMirror {
-        font-size: 3em;
+        font-size: 3rem;
         height: auto;
+      }
+
+      .header {
+        margin-left: 2rem;
+        margin-top: 2px;
+        font-family: Sans-Serif;
+        font-size: 2rem;
+        color: gray;
+      }
+
+      .title {
+        color: black;
+        font-size: 3rem;
       }
 
     </style>
   </head>
   <body>
+
+    <div class="header">
+      <div>Unit 1 / Module 1 / Example 1</div>
+      <div class="title">Hello HTML</div>
+    </div>
+    <div class="code"></div>
+
     <script>
       
-      var editorContainer = d3.select("body")
-        .append("div")
-        .node();
-
-      var editor = CodeMirror(editorContainer, {
+      var editor = CodeMirror(d3.select(".code").node(), {
         lineNumbers: true,
         mode: "htmlmixed"
       });
