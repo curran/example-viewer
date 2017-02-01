@@ -101,10 +101,25 @@
           };
 
           // Issue a POST request to the server API.
-          console.log("saving...");
           d3.request("save")
             .header("Content-Type", "application/json")
             .post(JSON.stringify(data), function (){
+              d3.select("body")
+                .append("div")
+                  .style("text-align", "center")
+                  .style("position", "fixed")
+                  .style("left", "0px")
+                  .style("right", "0px")
+                  .style("top", (window.innerHeight / 2 - 100) + "px")
+                  .style("z-index", 4)
+                  .style("font-size", "10em")
+                  .style("font-family", "Sans-Serif")
+                  .style("text-shadow", "0px 0px 5px white")
+                  .text("Saved!")
+                .transition().duration(1000)
+                  .style("opacity", 0)
+                  .remove();
+                
               console.log("saved");
             });
           }
