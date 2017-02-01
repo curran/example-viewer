@@ -47,8 +47,6 @@
 
       breadcrumbs.text("Unit 1 / Module 1 / Example 1");
 
-      title.text("Hello HTML");
-
       var code = body.append("div")
         .call(shadow);
 
@@ -66,18 +64,26 @@
         .attr("width", "960")
         .attr("height", "500")
         .attr("frameborder", "0px")
+        .attr("marginwidth", "0")
+        .attr("marginheight", "0")
+        .attr("scrolling", "no")
         .call(shadow);
 
       editor.on("change", function (){
         var html = editor.getValue()
         save(html);
         iframe.attr("srcdoc", html);
+        updateTitle(html);
       });
 
       d3.request("example.html").get(function (xhr){
-        editor.setValue(xhr.responseText);
+        var html = xhr.responseText
+        editor.setValue(html);
       });
 
+      function updateTitle(html){
+        title.text(html.match(/title>(.*?)</)[1]);
+      }
 
       function save(content){
         var data = { content: content };
