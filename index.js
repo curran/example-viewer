@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 app.use(express.static("."));
 
 app.post("/save", function (req, res){
-  console.log(req.body);
+  console.log(JSON.stringify(req.body, null, 2));
   fs.writeFile("example.html", req.body.content, function(err) {
     res.send(err || "ok");
   }); 

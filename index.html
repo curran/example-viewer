@@ -196,26 +196,16 @@
 
 
   function Keyboard(dispatch){
+    var html, params;
+    dispatch.on("htmlChange.keyboard", function (_){ html = _; });
+    dispatch.on("navigate.keyboard", function (_){ params = _; });
 
-    // Track the current state of the HTML content.
-    var html = "";
-    dispatch.on("htmlChange.keyboard", function (_){
-      html = _;
-    });
-
-    // Listen for global key presses.
     window.addEventListener("keydown", function (event){
-      var S = 83;
-
-      // Save the content to the server on CTRL + S
-      if(event.ctrlKey && event.which === S){
-
-        // Without this, the browser will try to save the page.
+      var ctrl = event.ctrlKey,
+          s = event.which === 83;
+      if(ctrl && s){
         event.preventDefault();
-
-        dispatch.call("save", null, {
-          content: html
-        });
+        dispatch.call("save", null, Object.assign({ content: html }, params));
       }
     });
   }
