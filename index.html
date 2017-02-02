@@ -81,7 +81,8 @@
     "htmlFetch", // When the HTML content is fetched from the server.
     "htmlChange", // When the HTML content is changed.
     "save", // When a save was requested.
-    "saved" // After a save occurred.
+    "saved", // After a save occurred.
+    "navigate" // On navigation (route change).
   );
 
   var body = d3.select("body");
@@ -92,6 +93,7 @@
   Overlay(body, dispatch);
   Server(dispatch);
   Keyboard(dispatch);
+  Router(dispatch);
 
 
   function Header(selection, dispatch){
@@ -216,6 +218,39 @@
         });
       }
     });
+  }
+
+
+  function Router(dispatch){
+    var defaultRoute = "#1/1/1";
+
+    window.addEventListener("hashchange", navigate);
+
+    if(!parseHash()) {
+      location.hash = defaultRoute;
+    } else {
+      navigate();
+    }
+
+    function navigate(){
+      var params = parseHash();
+      if(params){
+        dispatch.call("navigate", null, params);
+        console.log(JSON.stringify(params));
+      }
+    }
+
+    function parseHash(hash){
+      var path = location.hash.substr(1).split("/");
+      if(path.length === 3){
+        return {
+          unit: path[0],
+          module: path[1],
+          example: path[2]
+        };
+      }
+      return null;
+    }
   }
 
 }());
