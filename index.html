@@ -222,34 +222,30 @@
 
 
   function Router(dispatch){
-    var defaultRoute = "#1/1/1";
+    var defaultParams = { unit: 1, module: 1, example: 1, };
 
     window.addEventListener("hashchange", navigate);
-
-    if(!parseHash()) {
-      location.hash = defaultRoute;
-    } else {
-      navigate();
-    }
+    navigate();
 
     function navigate(){
       var params = parseHash();
       if(params){
         dispatch.call("navigate", null, params);
-        console.log(JSON.stringify(params));
+      } else {
+        location.hash = encodeHash(defaultParams);
       }
     }
 
-    function parseHash(hash){
+    function parseHash(){
       var path = location.hash.substr(1).split("/");
       if(path.length === 3){
-        return {
-          unit: path[0],
-          module: path[1],
-          example: path[2]
-        };
+        return { unit: path[0], module: path[1], example: path[2] };
       }
       return null;
+    }
+
+    function encodeHash(params){
+      return "#" + params.unit + "/" + params.module + "/" + params.example;
     }
   }
 
