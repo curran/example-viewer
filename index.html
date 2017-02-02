@@ -96,10 +96,8 @@
 
   function Editor(selection, dispatch){
 
-    var code = selection.append("div")
-          .attr("class", "shadow")
-          .node(),
-        editor = CodeMirror(code, {
+    var code = selection.append("div").attr("class", "shadow"),
+        editor = CodeMirror(code.node(), {
           lineNumbers: false,
           mode: "htmlmixed"
         });
