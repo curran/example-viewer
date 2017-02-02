@@ -217,11 +217,23 @@
     dispatch.on("navigate.keyboard", function (_){ params = _; });
 
     window.addEventListener("keydown", function (event){
-      var ctrl = event.ctrlKey,
-          s = event.which === 83;
-      if(ctrl && s){
+
+      var CTRL = event.ctrlKey,
+          S = event.which === 83,
+          RIGHT = event.which === 39,
+          LEFT = event.which === 37;
+
+      if(CTRL && S){
         event.preventDefault();
         dispatch.call("save", null, Object.assign({ html: html }, params));
+
+      } else if(CTRL && RIGHT){
+        console.log("next");
+        //dispatch.call("next");
+
+      } else if(CTRL && LEFT){
+        console.log("previous");
+        //dispatch.call("previous");
       }
     });
   }
