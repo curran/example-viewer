@@ -26,110 +26,178 @@
     -->
 
     <style>
-      body { margin: 0px; }
-      .CodeMirror { font-size: 3rem; height: auto; }
+
+      body {
+        margin: 0px;
+      }
+
+      .CodeMirror {
+        font-size: 3rem;
+        height: auto;
+      }
+
+      /* Adds a shadow effect. Inspired by Material Design "Cards". */
+      .shadow {
+        box-shadow: 1px 1px 4px grey;
+      }
+
     </style>
   </head>
   <body>
-
     <script>
+(function (){
 
-      var body = d3.select("body");
+  var dispatch = d3.dispatch(
+    "htmlFetch", // When the HTML content is fetched from the server.
+    "htmlChange", // When the HTML content is changed.
+    "save", // When a save was requested.
+    "saved" // After a save occurred.
+  );
 
-      var header = body.append("div")
-            .style("margin", "16px")
-            .style("font-size", "3rem")
-            .style("font-family", "Sans-Serif"),
-          breadcrumbs = header.append("div")
-            .style("color", "#999"),
-          title = header.append("div")
-            .style("font-size", "2em");
+  var body = d3.select("body");
 
-      // TODO make this dynamic.
-      breadcrumbs.text("Unit 1 / Module 1 / Example 1");
+  Header(body, dispatch);
+  Editor(body, dispatch);
+  Runner(body, dispatch);
+  Server(dispatch);
+  Keyboard(dispatch);
+  Overlay(dispatch);
 
-      // Set up the editor.
-      var code = body.append("div").call(shadow).node(),
-          editor = CodeMirror(code, { lineNumbers: false, mode: "htmlmixed" });
 
-      // Set up the running example.
-      var iframe = body.append("iframe")
-        .style("position", "fixed")
-        .style("top", "0px")
-        .style("right", "0px")
-        .style("background-color", "white")
-        .style("z-index", "3") // CodeMirror's z-index is 2
-        .attr("width", "960") // 960 X 500 is standard for bl.ocks.org
-        .attr("height", "500")
-        .attr("frameborder", "0px")
-        .attr("marginwidth", "0")
-        .attr("marginheight", "0")
-        .attr("scrolling", "no")
-        .call(shadow);
+  function Header(selection, dispatch){
+    var header = selection.append("div")
+          .style("margin", "16px")
+          .style("font-size", "3rem")
+          .style("font-family", "Sans-Serif"),
+        breadcrumbs = header.append("div")
+          .style("color", "#999"),
+        title = header.append("div")
+          .style("font-size", "2em");
 
-      // Respond to changes made in the editor.
-      editor.on("change", function (){
+    // TODO make this dynamic.
+    breadcrumbs.text("Unit 1 / Module 1 / Example 1");
 
-        // Get the new text content.
-        var html = editor.getValue()
+    dispatch.on("htmlChange.header", function (html){
+      title.text(extractTitle(html));
+    });
 
-        // Run the example.
-        iframe.attr("srcdoc", html);
+    function extractTitle(html){
+      return html.match(/title>(.*?)</)[1];
+    }
+  }
 
-        // Update the title.
-        title.text(html.match(/title>(.*?)</)[1]);
-      });
 
-      // Load the initial content (triggers editor.on("change")).
-      d3.request("example.html").get(function (xhr){
-        editor.setValue(xhr.responseText);
-      });
+  function Editor(selection, dispatch){
 
-      // Listen for global key presses.
-      window.addEventListener("keydown", function (event){
-        var S = 83;
+    var code = selection.append("div")
+          .attr("class", "shadow")
+          .node(),
+        editor = CodeMirror(code, {
+          lineNumbers: false,
+          mode: "htmlmixed"
+        });
 
-        // Save the content to the server on CTRL + S
-        if(event.ctrlKey && event.which === S){
+    editor.on("change", function (editor, change){
 
-          // Without this, the browser will try to save the page.
-          event.preventDefault();
+      // Ignore programmatic changes from editor.setValue().
+      if(change.origin === "setValue") return;
 
-          // Prepare the body of the POST request.
-          var data = {
-            content: editor.getValue()
-          };
+      dispatch.call("htmlChange", null, editor.getValue());
+    });
 
-          // Issue a POST request to the server API.
-          d3.request("save")
-            .header("Content-Type", "application/json")
-            .post(JSON.stringify(data), function (){
-              d3.select("body")
-                .append("div")
-                  .style("text-align", "center")
-                  .style("position", "fixed")
-                  .style("left", "0px")
-                  .style("right", "0px")
-                  .style("top", (window.innerHeight / 2 - 100) + "px")
-                  .style("z-index", 4)
-                  .style("font-size", "10em")
-                  .style("font-family", "Sans-Serif")
-                  .style("text-shadow", "0px 0px 5px white")
-                  .text("Saved!")
-                .transition().duration(1000)
-                  .style("opacity", 0)
-                  .remove();
-                
-              console.log("saved");
-            });
-          }
-      });
+    dispatch.on("htmlFetch.editor", function (html){
+      editor.setValue(html);
+    });
+  }
 
-      // Adds a shadow effect to the given D3 selection.
-      // Inspired by Material Design "Cards".
-      function shadow(selection){
-        return selection.style("box-shadow", "1px 1px 4px grey");
+
+  function Runner(selection, dispatch){
+
+    var iframe = selection.append("iframe")
+      .style("position", "fixed")
+      .style("top", "0px")
+      .style("right", "0px")
+      .style("background-color", "white")
+      .style("z-index", "3") // CodeMirror's z-index is 2.
+      .attr("width", "960") // 960 X 500 is standard for bl.ocks.org.
+      .attr("height", "500")
+      .attr("frameborder", "0px")
+      .attr("marginwidth", "0") // Have no margin to match with bl.ocks.org.
+      .attr("marginheight", "0")
+      .attr("scrolling", "no")
+      .attr("class", "shadow");
+
+    dispatch.on("htmlChange.runner", function (html){
+      iframe.attr("srcdoc", html);
+    });
+  }
+
+  
+  function Server(dispatch){
+    d3.request("example.html").get(function (xhr){
+      var html = xhr.responseText;
+      dispatch.call("htmlFetch", null, html);
+      dispatch.call("htmlChange", null, html);
+    });
+
+    dispatch.on("save.server", function (data){
+      d3.request("save")
+        .header("Content-Type", "application/json")
+        .post(JSON.stringify(data), function (){
+          dispatch.call("saved");
+        });
+    });
+  }
+
+
+  function Keyboard(dispatch){
+
+    // Track the current state of the HTML content.
+    var html = "";
+    dispatch.on("htmlChange.keyboard", function (_){
+      html = _;
+    });
+
+    // Listen for global key presses.
+    window.addEventListener("keydown", function (event){
+      var S = 83;
+
+      // Save the content to the server on CTRL + S
+      if(event.ctrlKey && event.which === S){
+
+        // Without this, the browser will try to save the page.
+        event.preventDefault();
+
+        dispatch.call("save", null, {
+          content: html
+        });
       }
+    });
+  }
+
+
+  function Overlay(dispatch){
+    
+    dispatch.on("saved.overlay", function (){
+      d3.select("body")
+        .append("div")
+          .style("text-align", "center")
+          .style("position", "fixed")
+          .style("left", "0px")
+          .style("right", "0px")
+          .style("top", (window.innerHeight / 2 - 100) + "px")
+          .style("z-index", 4)
+          .style("font-size", "10em")
+          .style("font-family", "Sans-Serif")
+          .style("text-shadow", "0px 0px 5px white")
+          .text("Saved!")
+        .transition().duration(1000)
+          .style("opacity", 0)
+          .remove();
+    });
+  }
+
+}());
 
     </script>
   </body>
