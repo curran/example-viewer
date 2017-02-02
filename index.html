@@ -172,9 +172,7 @@
           .remove();
     }
     
-    dispatch.on("saved.overlay", function (){
-      notify("Saved!");
-    });
+    dispatch.on("saved.overlay", notify);
   }
 
 
@@ -188,8 +186,8 @@
     dispatch.on("save.server", function (data){
       d3.request("save")
         .header("Content-Type", "application/json")
-        .post(JSON.stringify(data), function (){
-          dispatch.call("saved");
+        .post(JSON.stringify(data), function (xhr){
+          dispatch.call("saved", null, xhr.responseText);
         });
     });
   }
@@ -205,7 +203,7 @@
           s = event.which === 83;
       if(ctrl && s){
         event.preventDefault();
-        dispatch.call("save", null, Object.assign({ content: html }, params));
+        dispatch.call("save", null, Object.assign({ html: html }, params));
       }
     });
   }

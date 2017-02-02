@@ -6,16 +6,28 @@
 var express = require("express");
 var bodyParser = require("body-parser");
 var fs = require("fs");
+var mkdirp = require("mkdirp");
+var path = require("path");
 var app = express();
 
 app.use(bodyParser.json());
 app.use(express.static("."));
 
 app.post("/save", function (req, res){
-  console.log(JSON.stringify(req.body, null, 2));
-  fs.writeFile("example.html", req.body.content, function(err) {
-    res.send(err || "ok");
-  }); 
+  var unit = req.body.unit,
+      module = req.body.module,
+      example = req.body.example,
+      html = req.body.html,
+      directory = path.join("units", "unit-" + unit, "module-" + module, "example-" + example),
+      filename = path.join(directory, "index.html");
+
+  mkdirp(directory, function (err) {
+    if (err) return res.send(err);
+    fs.writeFile(filename, html, function(err) {
+      if (err) return res.send(err);
+      res.send("Saved!");
+    });
+  });
 });
 
 app.listen(3000, function () {
