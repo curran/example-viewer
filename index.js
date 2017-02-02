@@ -14,16 +14,17 @@ app.use(bodyParser.json());
 app.use(express.static("."));
 
 app.post("/save", function (req, res){
-  var unit = req.body.unit,
-      module = req.body.module,
-      example = req.body.example,
-      html = req.body.html,
-      directory = path.join("units", "unit-" + unit, "module-" + module, "example-" + example),
+  var directory = path.join(
+        "units",
+        "unit-" + req.body.unit,
+        "module-" + req.body.module,
+        "example-" + req.body.example
+      ),
       filename = path.join(directory, "index.html");
 
   mkdirp(directory, function (err) {
     if (err) return res.send(err);
-    fs.writeFile(filename, html, function(err) {
+    fs.writeFile(filename, req.body.html, function(err) {
       if (err) return res.send(err);
       res.send("Saved!");
     });
