@@ -42,11 +42,12 @@
     <script>
 (function (){
 
-  var dispatch = d3.dispatch("htmlChange");
+  var dispatch = d3.dispatch("htmlChange", "htmlFetch");
 
   var body = d3.select("body");
 
   Header(body, dispatch);
+  Editor(body, dispatch);
 
   function Header(selection, dispatch){
     var header = selection.append("div")
@@ -70,50 +71,58 @@
     }
   }
 
-  // Set up the editor.
-  var code = body.append("div")
-        .call(shadow)
-        .node(),
-      editor = CodeMirror(code, {
-        lineNumbers: false,
-        mode: "htmlmixed"
-      });
 
-  // Set up the running example.
-  var iframe = body.append("iframe")
-    .style("position", "fixed")
-    .style("top", "0px")
-    .style("right", "0px")
-    .style("background-color", "white")
-    .style("z-index", "3") // CodeMirror's z-index is 2
-    .attr("width", "960") // 960 X 500 is standard for bl.ocks.org
-    .attr("height", "500")
-    .attr("frameborder", "0px")
-    .attr("marginwidth", "0")
-    .attr("marginheight", "0")
-    .attr("scrolling", "no")
-    .call(shadow);
+  function Editor(selection, dispatch){
 
-  // Respond to changes made in the editor.
-  editor.on("change", function (editor, change){
+    // Set up the editor.
+    var code = body.append("div")
+          .call(shadow)
+          .node(),
+        editor = CodeMirror(code, {
+          lineNumbers: false,
+          mode: "htmlmixed"
+        });
 
-    // Ignore programmatic changes
-    if(change.origin === "setValue") return;
+    // Set up the running example.
+    var iframe = body.append("iframe")
+      .style("position", "fixed")
+      .style("top", "0px")
+      .style("right", "0px")
+      .style("background-color", "white")
+      .style("z-index", "3") // CodeMirror's z-index is 2
+      .attr("width", "960") // 960 X 500 is standard for bl.ocks.org
+      .attr("height", "500")
+      .attr("frameborder", "0px")
+      .attr("marginwidth", "0")
+      .attr("marginheight", "0")
+      .attr("scrolling", "no")
+      .call(shadow);
 
-    // Get the new text content.
-    var html = editor.getValue()
+    // Respond to changes made in the editor.
+    editor.on("change", function (editor, change){
 
-    // Run the example.
-    iframe.attr("srcdoc", html);
+      // Ignore programmatic changes
+      if(change.origin === "setValue") return;
 
-    dispatch.call("htmlChange", null, html);
-  });
+      // Get the new text content.
+      var html = editor.getValue()
+
+      // Run the example.
+      iframe.attr("srcdoc", html);
+
+      dispatch.call("htmlChange", null, html);
+    });
+
+    dispatch.on("htmlFetch", function (html){
+      editor.setValue(html);
+    });
+  }
 
   // Load the initial content (triggers editor.on("change")).
   d3.request("example.html").get(function (xhr){
     var html = xhr.responseText;
+    dispatch.call("htmlFetch", null, html);
     dispatch.call("htmlChange", null, html);
-    editor.setValue(html);
   });
 
   // Listen for global key presses.
