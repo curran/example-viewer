@@ -53,6 +53,14 @@
         font-size: 2em;
       }
 
+      .runner {
+        position: fixed;
+        top: 0px;
+        right: 0px;
+        background-color: white;
+        z-index: 3; /* CodeMirror's z-index is 2. */
+      }
+
     </style>
   </head>
   <body>
@@ -95,7 +103,6 @@
 
 
   function Editor(selection, dispatch){
-
     var code = selection.append("div").attr("class", "shadow"),
         editor = CodeMirror(code.node(), {
           lineNumbers: false,
@@ -103,10 +110,7 @@
         });
 
     editor.on("change", function (editor, change){
-
-      // Ignore programmatic changes from editor.setValue().
       if(change.origin === "setValue") return;
-
       dispatch.call("htmlChange", null, editor.getValue());
     });
 
@@ -117,20 +121,13 @@
 
 
   function Runner(selection, dispatch){
-
-    var iframe = selection.append("iframe")
-      .style("position", "fixed")
-      .style("top", "0px")
-      .style("right", "0px")
-      .style("background-color", "white")
-      .style("z-index", "3") // CodeMirror's z-index is 2.
+    var iframe = selection.append("iframe").attr("class", "shadow runner")
       .attr("width", "960") // 960 X 500 is standard for bl.ocks.org.
       .attr("height", "500")
-      .attr("frameborder", "0px")
       .attr("marginwidth", "0") // Have no margin to match with bl.ocks.org.
       .attr("marginheight", "0")
-      .attr("scrolling", "no")
-      .attr("class", "shadow");
+      .attr("frameborder", "0px")
+      .attr("scrolling", "no");
 
     dispatch.on("htmlChange.runner", function (html){
       iframe.attr("srcdoc", html);
