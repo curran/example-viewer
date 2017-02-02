@@ -6,16 +6,29 @@
 var express = require("express");
 var bodyParser = require("body-parser");
 var fs = require("fs");
+var mkdirp = require("mkdirp");
+var path = require("path");
 var app = express();
 
 app.use(bodyParser.json());
 app.use(express.static("."));
 
 app.post("/save", function (req, res){
-  console.log(req.body);
-  fs.writeFile("example.html", req.body.content, function(err) {
-    res.send(err || "ok");
-  }); 
+  var directory = path.join(
+        "units",
+        "unit-" + req.body.unit,
+        "module-" + req.body.module,
+        "example-" + req.body.example
+      ),
+      filename = path.join(directory, "index.html");
+
+  mkdirp(directory, function (err) {
+    if (err) return res.send(err);
+    fs.writeFile(filename, req.body.html, function(err) {
+      if (err) return res.send(err);
+      res.send("Saved!");
+    });
+  });
 });
 
 app.listen(3000, function () {
