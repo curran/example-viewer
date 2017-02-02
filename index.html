@@ -13,6 +13,8 @@
     <script src="/libs/xml.min.js"></script>
     <script src="/libs/htmlmixed.min.js"></script>
     <link rel="stylesheet" href="/libs/codemirror.min.css">
+    <script src="/libs/inlet.min.js"></script>
+    <link rel="stylesheet" href="/libs/inlet.css">
     
     <!-- For cloud hosting -->
     <!--
@@ -23,6 +25,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.23.0/mode/xml/xml.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.23.0/mode/htmlmixed/htmlmixed.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.23.0/codemirror.min.css">
+    <script src="https://enjalot.github.io/Inlet/inlet.min.js"></script>
+    <link rel="stylesheet" href="https://enjalot.github.io/Inlet/inlet.css">
     -->
 
     <style>
@@ -121,6 +125,9 @@
           lineNumbers: false,
           mode: "htmlmixed"
         });
+
+    // Inlet provides the interactive sliders and color pickers.
+    Inlet(editor);
 
     editor.on("change", function (editor, change){
       if(change.origin === "setValue") return;
