@@ -36,6 +36,11 @@
         height: auto;
       }
 
+      /* Adds a shadow effect. Inspired by Material Design "Cards". */
+      .shadow {
+        box-shadow: 1px 1px 4px grey;
+      }
+
     </style>
   </head>
   <body>
@@ -85,7 +90,7 @@
   function Editor(selection, dispatch){
 
     var code = selection.append("div")
-          .call(shadow)
+          .attr("class", "shadow")
           .node(),
         editor = CodeMirror(code, {
           lineNumbers: false,
@@ -120,7 +125,7 @@
       .attr("marginwidth", "0") // Have no margin to match with bl.ocks.org.
       .attr("marginheight", "0")
       .attr("scrolling", "no")
-      .call(shadow);
+      .attr("class", "shadow");
 
     dispatch.on("htmlChange.runner", function (html){
       iframe.attr("srcdoc", html);
@@ -190,12 +195,6 @@
           .style("opacity", 0)
           .remove();
     });
-  }
-
-  // Adds a shadow effect to the given D3 selection.
-  // Inspired by Material Design "Cards".
-  function shadow(selection){
-    return selection.style("box-shadow", "1px 1px 4px grey");
   }
 
 }());
