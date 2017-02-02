@@ -29,6 +29,7 @@
 
       body {
         margin: 0px;
+        font-family: Sans-Serif;
       }
 
       .CodeMirror {
@@ -39,6 +40,17 @@
       /* Adds a shadow effect. Inspired by Material Design "Cards". */
       .shadow {
         box-shadow: 1px 1px 4px grey;
+      }
+
+      .header {
+        margin: 16px;
+        font-size: 3rem;
+      }
+      .header-breadcrumbs {
+        color: #999;
+      }
+      .header-title {
+        font-size: 2em;
       }
 
     </style>
@@ -65,14 +77,9 @@
 
 
   function Header(selection, dispatch){
-    var header = selection.append("div")
-          .style("margin", "16px")
-          .style("font-size", "3rem")
-          .style("font-family", "Sans-Serif"),
-        breadcrumbs = header.append("div")
-          .style("color", "#999"),
-        title = header.append("div")
-          .style("font-size", "2em");
+    var header = selection.append("div").attr("class", "header"),
+        breadcrumbs = header.append("div").attr("class", "header-breadcrumbs"),
+        title = header.append("div").attr("class", "header-title");
 
     // TODO make this dynamic.
     breadcrumbs.text("Unit 1 / Module 1 / Example 1");
