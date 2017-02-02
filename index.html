@@ -61,6 +61,16 @@
         z-index: 3; /* CodeMirror's z-index is 2. */
       }
 
+      .overlay {
+        position: fixed;
+        top: 0px;
+        bottom: 0px;
+        right: 0px;
+        left: 0px;
+        pointer-events: none;
+        z-index: 4; /* Above everything else. */
+      }
+
     </style>
   </head>
   <body>
@@ -79,9 +89,9 @@
   Header(body, dispatch);
   Editor(body, dispatch);
   Runner(body, dispatch);
+  Overlay(body, dispatch);
   Server(dispatch);
   Keyboard(dispatch);
-  Overlay(dispatch);
 
 
   function Header(selection, dispatch){
@@ -135,6 +145,37 @@
   }
 
   
+  function Overlay(selection, dispatch){
+    var div = selection.append("div").attr("class", "overlay"),
+        svg = div.append("svg");
+
+    function notify(message){
+      var width = div.node().clientWidth,
+          height = div.node().clientHeight;
+      svg
+          .attr("width", width)
+          .attr("height", height)
+        .append("text")
+          .attr("x", width / 2)
+          .attr("y", height / 2)
+          .attr("text-anchor", "middle")
+          .attr("alignment-baseline", "middle")
+          .style("text-shadow", "0px 0px 5px white")
+          .attr("font-size", "20em")
+          .attr("opacity", 1)
+          .text(message)
+        .transition().duration(700).ease(d3.easeLinear)
+          .attr("font-size", "23em")
+          .attr("opacity", 0)
+          .remove();
+    }
+    
+    dispatch.on("saved.overlay", function (){
+      notify("Saved!");
+    });
+  }
+
+
   function Server(dispatch){
     d3.request("example.html").get(function (xhr){
       var html = xhr.responseText;
@@ -174,28 +215,6 @@
           content: html
         });
       }
-    });
-  }
-
-
-  function Overlay(dispatch){
-    
-    dispatch.on("saved.overlay", function (){
-      d3.select("body")
-        .append("div")
-          .style("text-align", "center")
-          .style("position", "fixed")
-          .style("left", "0px")
-          .style("right", "0px")
-          .style("top", (window.innerHeight / 2 - 100) + "px")
-          .style("z-index", 4)
-          .style("font-size", "10em")
-          .style("font-family", "Sans-Serif")
-          .style("text-shadow", "0px 0px 5px white")
-          .text("Saved!")
-        .transition().duration(1000)
-          .style("opacity", 0)
-          .remove();
     });
   }
 
