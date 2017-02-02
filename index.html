@@ -101,16 +101,17 @@
         breadcrumbs = header.append("div").attr("class", "header-breadcrumbs"),
         title = header.append("div").attr("class", "header-title");
 
-    // TODO make this dynamic.
-    breadcrumbs.text("Unit 1 / Module 1 / Example 1");
-
-    dispatch.on("htmlChange.header", function (html){
-      title.text(extractTitle(html));
+    dispatch.on("navigate.header", function (params){
+      breadcrumbs.text([
+        "Unit " + params.unit,
+        "Module " + params.module,
+        "Example " + params.example
+      ].join(" / "));
     });
 
-    function extractTitle(html){
-      return html.match(/title>(.*?)</)[1];
-    }
+    dispatch.on("htmlChange.header", function (html){
+      title.text(html.match(/title>(.*?)</)[1]);
+    });
   }
 
 
