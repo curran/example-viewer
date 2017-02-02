@@ -42,14 +42,21 @@
     <script>
 (function (){
 
+  var dispatch = d3.dispatch(
+    "htmlFetch", // When the HTML content is fetched from the server.
+    "htmlChange", // When the HTML content is changed.
+    "save", // When a save was requested.
+    "saved" // After a save occurred.
+  );
+
   var body = d3.select("body");
-  var dispatch = d3.dispatch("htmlChange", "htmlFetch", "save");
 
   Header(body, dispatch);
   Editor(body, dispatch);
   Runner(body, dispatch);
   Server(dispatch);
   Keyboard(dispatch);
+  Overlay(dispatch);
 
 
   function Header(selection, dispatch){
@@ -106,11 +113,11 @@
       .style("top", "0px")
       .style("right", "0px")
       .style("background-color", "white")
-      .style("z-index", "3") // CodeMirror's z-index is 2
-      .attr("width", "960") // 960 X 500 is standard for bl.ocks.org
+      .style("z-index", "3") // CodeMirror's z-index is 2.
+      .attr("width", "960") // 960 X 500 is standard for bl.ocks.org.
       .attr("height", "500")
       .attr("frameborder", "0px")
-      .attr("marginwidth", "0")
+      .attr("marginwidth", "0") // Have no margin to match with bl.ocks.org.
       .attr("marginheight", "0")
       .attr("scrolling", "no")
       .call(shadow);
@@ -132,23 +139,7 @@
       d3.request("save")
         .header("Content-Type", "application/json")
         .post(JSON.stringify(data), function (){
-
-          d3.select("body")
-            .append("div")
-              .style("text-align", "center")
-              .style("position", "fixed")
-              .style("left", "0px")
-              .style("right", "0px")
-              .style("top", (window.innerHeight / 2 - 100) + "px")
-              .style("z-index", 4)
-              .style("font-size", "10em")
-              .style("font-family", "Sans-Serif")
-              .style("text-shadow", "0px 0px 5px white")
-              .text("Saved!")
-            .transition().duration(1000)
-              .style("opacity", 0)
-              .remove();
-
+          dispatch.call("saved");
         });
     });
   }
@@ -156,7 +147,7 @@
 
   function Keyboard(dispatch){
 
-    // Save the current state of the HTML content.
+    // Track the current state of the HTML content.
     var html = "";
     dispatch.on("htmlChange.keyboard", function (_){
       html = _;
@@ -179,11 +170,34 @@
     });
   }
 
+
+  function Overlay(dispatch){
+    
+    dispatch.on("saved.overlay", function (){
+      d3.select("body")
+        .append("div")
+          .style("text-align", "center")
+          .style("position", "fixed")
+          .style("left", "0px")
+          .style("right", "0px")
+          .style("top", (window.innerHeight / 2 - 100) + "px")
+          .style("z-index", 4)
+          .style("font-size", "10em")
+          .style("font-family", "Sans-Serif")
+          .style("text-shadow", "0px 0px 5px white")
+          .text("Saved!")
+        .transition().duration(1000)
+          .style("opacity", 0)
+          .remove();
+    });
+  }
+
   // Adds a shadow effect to the given D3 selection.
   // Inspired by Material Design "Cards".
   function shadow(selection){
     return selection.style("box-shadow", "1px 1px 4px grey");
   }
+
 }());
 
     </script>
