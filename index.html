@@ -42,13 +42,14 @@
     <script>
 (function (){
 
-  var dispatch = d3.dispatch("htmlChange", "htmlFetch");
-
   var body = d3.select("body");
+  var dispatch = d3.dispatch("htmlChange", "htmlFetch");
 
   Header(body, dispatch);
   Editor(body, dispatch);
   Runner(body, dispatch);
+  Server(dispatch);
+
 
   function Header(selection, dispatch){
     var header = selection.append("div")
@@ -99,7 +100,6 @@
 
   function Runner(selection, dispatch){
 
-    // Set up the running example.
     var iframe = selection.append("iframe")
       .style("position", "fixed")
       .style("top", "0px")
@@ -115,19 +115,19 @@
       .call(shadow);
 
     dispatch.on("htmlChange.runner", function (html){
-
-      // Run the example.
       iframe.attr("srcdoc", html);
     });
   }
 
+  
+  function Server(dispatch){
+    d3.request("example.html").get(function (xhr){
+      var html = xhr.responseText;
+      dispatch.call("htmlFetch", null, html);
+      dispatch.call("htmlChange", null, html);
+    });
+  }
 
-  // Load the initial content (triggers editor.on("change")).
-  d3.request("example.html").get(function (xhr){
-    var html = xhr.responseText;
-    dispatch.call("htmlFetch", null, html);
-    dispatch.call("htmlChange", null, html);
-  });
 
   // Listen for global key presses.
   window.addEventListener("keydown", function (event){
