@@ -29,6 +29,7 @@
 
       body {
         margin: 0px;
+        font-family: Sans-Serif;
       }
 
       .CodeMirror {
@@ -39,6 +40,35 @@
       /* Adds a shadow effect. Inspired by Material Design "Cards". */
       .shadow {
         box-shadow: 1px 1px 4px grey;
+      }
+
+      .header {
+        margin: 16px;
+        font-size: 3rem;
+      }
+      .header-breadcrumbs {
+        color: #999;
+      }
+      .header-title {
+        font-size: 2em;
+      }
+
+      .runner {
+        position: fixed;
+        top: 0px;
+        right: 0px;
+        background-color: white;
+        z-index: 3; /* CodeMirror's z-index is 2. */
+      }
+
+      .overlay {
+        position: fixed;
+        top: 0px;
+        bottom: 0px;
+        right: 0px;
+        left: 0px;
+        pointer-events: none;
+        z-index: 4; /* Above everything else. */
       }
 
     </style>
@@ -59,20 +89,15 @@
   Header(body, dispatch);
   Editor(body, dispatch);
   Runner(body, dispatch);
+  Overlay(body, dispatch);
   Server(dispatch);
   Keyboard(dispatch);
-  Overlay(dispatch);
 
 
   function Header(selection, dispatch){
-    var header = selection.append("div")
-          .style("margin", "16px")
-          .style("font-size", "3rem")
-          .style("font-family", "Sans-Serif"),
-        breadcrumbs = header.append("div")
-          .style("color", "#999"),
-        title = header.append("div")
-          .style("font-size", "2em");
+    var header = selection.append("div").attr("class", "header"),
+        breadcrumbs = header.append("div").attr("class", "header-breadcrumbs"),
+        title = header.append("div").attr("class", "header-title");
 
     // TODO make this dynamic.
     breadcrumbs.text("Unit 1 / Module 1 / Example 1");
@@ -88,20 +113,14 @@
 
 
   function Editor(selection, dispatch){
-
-    var code = selection.append("div")
-          .attr("class", "shadow")
-          .node(),
-        editor = CodeMirror(code, {
+    var code = selection.append("div").attr("class", "shadow"),
+        editor = CodeMirror(code.node(), {
           lineNumbers: false,
           mode: "htmlmixed"
         });
 
     editor.on("change", function (editor, change){
-
-      // Ignore programmatic changes from editor.setValue().
       if(change.origin === "setValue") return;
-
       dispatch.call("htmlChange", null, editor.getValue());
     });
 
@@ -112,20 +131,13 @@
 
 
   function Runner(selection, dispatch){
-
-    var iframe = selection.append("iframe")
-      .style("position", "fixed")
-      .style("top", "0px")
-      .style("right", "0px")
-      .style("background-color", "white")
-      .style("z-index", "3") // CodeMirror's z-index is 2.
+    var iframe = selection.append("iframe").attr("class", "shadow runner")
       .attr("width", "960") // 960 X 500 is standard for bl.ocks.org.
       .attr("height", "500")
-      .attr("frameborder", "0px")
       .attr("marginwidth", "0") // Have no margin to match with bl.ocks.org.
       .attr("marginheight", "0")
-      .attr("scrolling", "no")
-      .attr("class", "shadow");
+      .attr("frameborder", "0px")
+      .attr("scrolling", "no");
 
     dispatch.on("htmlChange.runner", function (html){
       iframe.attr("srcdoc", html);
@@ -133,6 +145,37 @@
   }
 
   
+  function Overlay(selection, dispatch){
+    var div = selection.append("div").attr("class", "overlay"),
+        svg = div.append("svg");
+
+    function notify(message){
+      var width = div.node().clientWidth,
+          height = div.node().clientHeight;
+      svg
+          .attr("width", width)
+          .attr("height", height)
+        .append("text")
+          .attr("x", width / 2)
+          .attr("y", height / 2)
+          .attr("text-anchor", "middle")
+          .attr("alignment-baseline", "middle")
+          .style("text-shadow", "0px 0px 5px white")
+          .attr("font-size", "20em")
+          .attr("opacity", 1)
+          .text(message)
+        .transition().duration(700).ease(d3.easeLinear)
+          .attr("font-size", "23em")
+          .attr("opacity", 0)
+          .remove();
+    }
+    
+    dispatch.on("saved.overlay", function (){
+      notify("Saved!");
+    });
+  }
+
+
   function Server(dispatch){
     d3.request("example.html").get(function (xhr){
       var html = xhr.responseText;
@@ -172,28 +215,6 @@
           content: html
         });
       }
-    });
-  }
-
-
-  function Overlay(dispatch){
-    
-    dispatch.on("saved.overlay", function (){
-      d3.select("body")
-        .append("div")
-          .style("text-align", "center")
-          .style("position", "fixed")
-          .style("left", "0px")
-          .style("right", "0px")
-          .style("top", (window.innerHeight / 2 - 100) + "px")
-          .style("z-index", 4)
-          .style("font-size", "10em")
-          .style("font-family", "Sans-Serif")
-          .style("text-shadow", "0px 0px 5px white")
-          .text("Saved!")
-        .transition().duration(1000)
-          .style("opacity", 0)
-          .remove();
     });
   }
 
