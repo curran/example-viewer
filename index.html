@@ -185,10 +185,20 @@
 
 
   function Server(dispatch){
-    d3.request("example.html").get(function (xhr){
-      var html = xhr.responseText;
-      dispatch.call("htmlFetch", null, html);
-      dispatch.call("htmlChange", null, html);
+    dispatch.on("navigate.server", function (params){
+      var url = [
+        "units",
+        "unit-" + params.unit,
+        "module-" + params.module,
+        "example-" + params.example,
+        "index.html"
+      ].join("/");
+
+      d3.request(url).get(function (xhr){
+        var html = xhr.responseText;
+        dispatch.call("htmlFetch", null, html);
+        dispatch.call("htmlChange", null, html);
+      });
     });
 
     dispatch.on("save.server", function (data){
