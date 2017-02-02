@@ -48,6 +48,7 @@
 
   Header(body, dispatch);
   Editor(body, dispatch);
+  Runner(body, dispatch);
 
   function Header(selection, dispatch){
     var header = selection.append("div")
@@ -74,8 +75,7 @@
 
   function Editor(selection, dispatch){
 
-    // Set up the editor.
-    var code = body.append("div")
+    var code = selection.append("div")
           .call(shadow)
           .node(),
         editor = CodeMirror(code, {
@@ -83,8 +83,24 @@
           mode: "htmlmixed"
         });
 
+    editor.on("change", function (editor, change){
+
+      // Ignore programmatic changes from editor.setValue().
+      if(change.origin === "setValue") return;
+
+      dispatch.call("htmlChange", null, editor.getValue());
+    });
+
+    dispatch.on("htmlFetch.editor", function (html){
+      editor.setValue(html);
+    });
+  }
+
+
+  function Runner(selection, dispatch){
+
     // Set up the running example.
-    var iframe = body.append("iframe")
+    var iframe = selection.append("iframe")
       .style("position", "fixed")
       .style("top", "0px")
       .style("right", "0px")
@@ -98,25 +114,13 @@
       .attr("scrolling", "no")
       .call(shadow);
 
-    // Respond to changes made in the editor.
-    editor.on("change", function (editor, change){
-
-      // Ignore programmatic changes
-      if(change.origin === "setValue") return;
-
-      // Get the new text content.
-      var html = editor.getValue()
+    dispatch.on("htmlChange.runner", function (html){
 
       // Run the example.
       iframe.attr("srcdoc", html);
-
-      dispatch.call("htmlChange", null, html);
-    });
-
-    dispatch.on("htmlFetch", function (html){
-      editor.setValue(html);
     });
   }
+
 
   // Load the initial content (triggers editor.on("change")).
   d3.request("example.html").get(function (xhr){
@@ -159,8 +163,6 @@
             .transition().duration(1000)
               .style("opacity", 0)
               .remove();
-            
-          console.log("saved");
         });
       }
   });
