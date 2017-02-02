@@ -43,12 +43,13 @@
 (function (){
 
   var body = d3.select("body");
-  var dispatch = d3.dispatch("htmlChange", "htmlFetch");
+  var dispatch = d3.dispatch("htmlChange", "htmlFetch", "save");
 
   Header(body, dispatch);
   Editor(body, dispatch);
   Runner(body, dispatch);
   Server(dispatch);
+  Keyboard(dispatch);
 
 
   function Header(selection, dispatch){
@@ -126,28 +127,12 @@
       dispatch.call("htmlFetch", null, html);
       dispatch.call("htmlChange", null, html);
     });
-  }
 
-
-  // Listen for global key presses.
-  window.addEventListener("keydown", function (event){
-    var S = 83;
-
-    // Save the content to the server on CTRL + S
-    if(event.ctrlKey && event.which === S){
-
-      // Without this, the browser will try to save the page.
-      event.preventDefault();
-
-      // Prepare the body of the POST request.
-      var data = {
-        content: editor.getValue()
-      };
-
-      // Issue a POST request to the server API.
+    dispatch.on("save.server", function (data){
       d3.request("save")
         .header("Content-Type", "application/json")
         .post(JSON.stringify(data), function (){
+
           d3.select("body")
             .append("div")
               .style("text-align", "center")
@@ -163,9 +148,36 @@
             .transition().duration(1000)
               .style("opacity", 0)
               .remove();
+
+        });
+    });
+  }
+
+
+  function Keyboard(dispatch){
+
+    // Save the current state of the HTML content.
+    var html = "";
+    dispatch.on("htmlChange.keyboard", function (_){
+      html = _;
+    });
+
+    // Listen for global key presses.
+    window.addEventListener("keydown", function (event){
+      var S = 83;
+
+      // Save the content to the server on CTRL + S
+      if(event.ctrlKey && event.which === S){
+
+        // Without this, the browser will try to save the page.
+        event.preventDefault();
+
+        dispatch.call("save", null, {
+          content: html
         });
       }
-  });
+    });
+  }
 
   // Adds a shadow effect to the given D3 selection.
   // Inspired by Material Design "Cards".
