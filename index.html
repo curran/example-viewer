@@ -84,6 +84,7 @@
   main();
 
   function main(){
+
     var store = Store([
           "htmlFetch", // When the HTML content is fetched from the server.
           "htmlChange", // When the HTML content is changed.
@@ -107,7 +108,7 @@
     Navigator(store);
   }
 
-  
+  // A Redux-inspired store that uses d3.dispatch.
   function Store(actions){
     var dispatch = d3.dispatch.apply(null, actions),
         state = {};
@@ -126,7 +127,7 @@
     };
   }
 
-
+  // User interface component for the header text (top left).
   function Header(store, selection){
     var header = selection.append("div").attr("class", "header"),
         breadcrumbs = header.append("div").attr("class", "header-breadcrumbs"),
@@ -146,6 +147,7 @@
   }
 
 
+  // User interface component for the code editor.
   function Editor(store, selection){
     var code = selection.append("div").attr("class", "shadow"),
         editor = CodeMirror(code.node(), {
@@ -167,6 +169,7 @@
   }
 
 
+  // User interface component for the running example (top right).
   function Runner(store, selection){
     var iframe = selection.append("iframe").attr("class", "shadow runner")
       .attr("width", "960") // 960 X 500 is standard for bl.ocks.org.
@@ -182,6 +185,7 @@
   }
 
   
+  // User interface component for the notification overlay (displays "Saved!").
   function Overlay(store, selection){
     var div = selection.append("div").attr("class", "overlay"),
         svg = div.append("svg");
@@ -211,7 +215,9 @@
   }
 
 
+  // Deals with interactions between the browser and server.
   function Server(store){
+
     store.dispatch.on("navigated.server", function (params){
       var url = [
         "units",
@@ -229,8 +235,8 @@
     });
 
     store.dispatch.on("save.server", function (){
-      var state = store.getState();
-      var data = Object.assign({ html: state.htmlChange }, state.navigated);
+      var state = store.getState(),
+          data = Object.assign({ html: state.htmlChange }, state.navigated);
       d3.request("save")
         .header("Content-Type", "application/json")
         .post(JSON.stringify(data), function (xhr){
@@ -240,6 +246,7 @@
   }
 
 
+  // Translates global keyboard events into dispatched actions.
   function Keyboard(store){
     window.addEventListener("keydown", function (e){
 
@@ -255,8 +262,9 @@
   }
 
 
+  // Deals with the route, kept in the fragment identifier.
   function Router(store){
-    var defaultParams = { unit: 1, module: 1, example: 1, };
+    var defaultParams = { unit: 1, module: 1, example: 1 };
 
     window.addEventListener("hashchange", navigate);
     navigate();
@@ -292,6 +300,7 @@
   }
 
 
+  // Translates "next" and "previous" actions into "navigate" actions.
   function Navigator(store){
 
     store.dispatch.on("next", go(1));
@@ -306,9 +315,7 @@
       }
     }
   }
-
 }());
-
     </script>
   </body>
 </html>
