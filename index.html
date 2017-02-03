@@ -81,7 +81,7 @@
     <script>
 (function (){
 
-  var dispatch = d3.dispatch(
+  var actions = [
     "htmlFetch", // When the HTML content is fetched from the server.
     "htmlChange", // When the HTML content is changed.
     "save", // When a save was requested.
@@ -90,7 +90,9 @@
     "navigated", // After navigation occurred (after a route change).
     "next", // When the user wants to go to the next example.
     "previous" // When the user wants to go to the previous example.
-  );
+  ]
+
+  var dispatch = d3.dispatch.apply(null, actions);
 
   var getState = (function (state){
     Object.keys(dispatch._).forEach(function (type){
