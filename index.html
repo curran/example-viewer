@@ -239,22 +239,18 @@
     });
   }
 
+
   function Keyboard(store){
-    window.addEventListener("keydown", function (event){
+    window.addEventListener("keydown", function (e){
 
-      var CTRL = event.ctrlKey,
-          S = event.which === 83,
-          RIGHT = event.which === 39,
-          LEFT = event.which === 37;
+      var CTRL = e.ctrlKey,
+          S = e.which === 83,
+          RIGHT = e.which === 39,
+          LEFT = e.which === 37;
 
-      if(CTRL && S){
-        event.preventDefault();
-        store.dispatch.call("save");
-      } else if(CTRL && RIGHT){
-        store.dispatch.call("next");
-      } else if(CTRL && LEFT){
-        store.dispatch.call("previous");
-      }
+      if(CTRL && S){ store.dispatch.call("save"); e.preventDefault(); }
+      if(CTRL && RIGHT){ store.dispatch.call("next"); }
+      if(CTRL && LEFT){ store.dispatch.call("previous"); }
     });
   }
 
@@ -297,8 +293,10 @@
 
 
   function Navigator(store){
+
     store.dispatch.on("next", go(1));
     store.dispatch.on("previous", go(-1));
+
     function go(increment){
       return function (){
         var navigated = store.getState().navigated;
