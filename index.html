@@ -92,25 +92,7 @@
     "previous" // When the user wants to go to the previous example.
   ]
 
-  var dispatch = d3.dispatch.apply(null, actions);
-
-  var getState = (function (state){
-    actions.forEach(function (type){
-      dispatch.on(type + ".getState", function (arg){
-        var newState = {};
-        newState[type] = arg;
-        state = Object.assign(state, newState);
-      });
-    });
-    return function (){
-      return state;
-    };
-  }({}));
-
-  var store = {
-    dispatch: dispatch,
-    getState: getState
-  };
+  var store = Store(actions);
 
   var body = d3.select("body");
 
@@ -122,6 +104,27 @@
   Keyboard(store);
   Router(store);
   Navigator(store);
+
+  
+  function Store(actions){
+    var dispatch = d3.dispatch.apply(null, actions);
+    var getState = (function (state){
+      actions.forEach(function (type){
+        dispatch.on(type + ".getState", function (arg){
+          var newState = {};
+          newState[type] = arg;
+          state = Object.assign(state, newState);
+        });
+      });
+      return function (){
+        return state;
+      };
+    }({}));
+    return {
+      dispatch: dispatch,
+      getState: getState
+    };
+  }
 
 
   function Header(store, selection){
@@ -220,17 +223,14 @@
 
       d3.request(url).get(function (xhr){
         var html = xhr.responseText;
-        dispatch.call("htmlFetch", null, html);
-        dispatch.call("htmlChange", null, html);
+        store.dispatch.call("htmlFetch", null, html);
+        store.dispatch.call("htmlChange", null, html);
       });
     });
 
     store.dispatch.on("save.server", function (){
-
-      var data = Object.assign({
-        html: getState().htmlChange
-      }, getState().navigated);
-
+      var state = store.getState();
+      var data = Object.assign({ html: state.htmlChange }, state.navigated);
       d3.request("save")
         .header("Content-Type", "application/json")
         .post(JSON.stringify(data), function (xhr){
@@ -301,7 +301,7 @@
     store.dispatch.on("previous", go(-1));
     function go(increment){
       return function (){
-        var navigated = getState().navigated;
+        var navigated = store.getState().navigated;
         store.dispatch.call("navigate", null, Object.assign(navigated, {
           example: navigated.example + increment
         }));
