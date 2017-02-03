@@ -81,13 +81,29 @@
     <script>
 (function (){
 
-  var dispatch = d3.dispatch(
+  var actions = [
     "htmlFetch", // When the HTML content is fetched from the server.
     "htmlChange", // When the HTML content is changed.
     "save", // When a save was requested.
     "saved", // After a save occurred.
-    "navigate" // On navigation (route change).
-  );
+    "navigate", // When a navigation was requested.
+    "navigated", // After navigation occurred (after a route change).
+    "next", // When the user wants to go to the next example.
+    "previous" // When the user wants to go to the previous example.
+  ]
+
+  var dispatch = d3.dispatch.apply(null, actions);
+
+  var getState = (function (state){
+    Object.keys(dispatch._).forEach(function (type){
+      dispatch.on(type + ".getState", function (arg){
+        var newState = {};
+        newState[type] = arg;
+        state = Object.assign(state, newState);
+      });
+    });
+    return function (){ return state; }
+  }({}));
 
   var body = d3.select("body");
 
@@ -95,9 +111,10 @@
   Editor(body, dispatch);
   Runner(body, dispatch);
   Overlay(body, dispatch);
-  Server(dispatch);
+  Server(dispatch, getState);
   Keyboard(dispatch);
   Router(dispatch);
+  Navigator(dispatch, getState);
 
 
   function Header(selection, dispatch){
@@ -105,7 +122,7 @@
         breadcrumbs = header.append("div").attr("class", "header-breadcrumbs"),
         title = header.append("div").attr("class", "header-title");
 
-    dispatch.on("navigate.header", function (params){
+    dispatch.on("navigated.header", function (params){
       breadcrumbs.text([
         "Unit " + params.unit,
         "Module " + params.module,
@@ -184,8 +201,8 @@
   }
 
 
-  function Server(dispatch){
-    dispatch.on("navigate.server", function (params){
+  function Server(dispatch, getState){
+    dispatch.on("navigated.server", function (params){
       var url = [
         "units",
         "unit-" + params.unit,
@@ -201,7 +218,12 @@
       });
     });
 
-    dispatch.on("save.server", function (data){
+    dispatch.on("save.server", function (){
+
+      var data = Object.assign({
+        html: getState().htmlChange
+      }, getState().navigated);
+
       d3.request("save")
         .header("Content-Type", "application/json")
         .post(JSON.stringify(data), function (xhr){
@@ -210,18 +232,21 @@
     });
   }
 
-
   function Keyboard(dispatch){
-    var html, params;
-    dispatch.on("htmlChange.keyboard", function (_){ html = _; });
-    dispatch.on("navigate.keyboard", function (_){ params = _; });
-
     window.addEventListener("keydown", function (event){
-      var ctrl = event.ctrlKey,
-          s = event.which === 83;
-      if(ctrl && s){
+
+      var CTRL = event.ctrlKey,
+          S = event.which === 83,
+          RIGHT = event.which === 39,
+          LEFT = event.which === 37;
+
+      if(CTRL && S){
         event.preventDefault();
-        dispatch.call("save", null, Object.assign({ html: html }, params));
+        dispatch.call("save");
+      } else if(CTRL && RIGHT){
+        dispatch.call("next");
+      } else if(CTRL && LEFT){
+        dispatch.call("previous");
       }
     });
   }
@@ -233,10 +258,14 @@
     window.addEventListener("hashchange", navigate);
     navigate();
 
+    dispatch.on("navigate", function (params){
+      location.hash = encodeHash(params);
+    });
+
     function navigate(){
       var params = parseHash();
       if(params){
-        dispatch.call("navigate", null, params);
+        dispatch.call("navigated", null, params);
       } else {
         location.hash = encodeHash(defaultParams);
       }
@@ -245,13 +274,31 @@
     function parseHash(){
       var path = location.hash.substr(1).split("/");
       if(path.length === 3){
-        return { unit: path[0], module: path[1], example: path[2] };
+        return {
+          unit: +path[0],
+          module: +path[1],
+          example: +path[2]
+        };
       }
       return null;
     }
 
     function encodeHash(params){
       return "#" + params.unit + "/" + params.module + "/" + params.example;
+    }
+  }
+
+
+  function Navigator(dispatch, getState){
+    dispatch.on("next", go(1));
+    dispatch.on("previous", go(-1));
+    function go(increment){
+      return function (){
+        var navigated = getState().navigated;
+        dispatch.call("navigate", null, Object.assign(navigated, {
+          example: navigated.example + increment
+        }));
+      }
     }
   }
 
