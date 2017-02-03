@@ -109,8 +109,8 @@
   Editor(body, dispatch);
   Runner(body, dispatch);
   Overlay(body, dispatch);
-  Server(dispatch);
-  Keyboard(dispatch, getState);
+  Server(dispatch, getState);
+  Keyboard(dispatch);
   Router(dispatch);
   Navigator(dispatch, getState);
 
@@ -199,7 +199,7 @@
   }
 
 
-  function Server(dispatch){
+  function Server(dispatch, getState){
     dispatch.on("navigated.server", function (params){
       var url = [
         "units",
@@ -216,7 +216,12 @@
       });
     });
 
-    dispatch.on("save.server", function (data){
+    dispatch.on("save.server", function (){
+
+      var data = Object.assign({
+        html: getState().htmlChange
+      }, getState().navigated);
+
       d3.request("save")
         .header("Content-Type", "application/json")
         .post(JSON.stringify(data), function (xhr){
@@ -225,7 +230,7 @@
     });
   }
 
-  function Keyboard(dispatch, getState){
+  function Keyboard(dispatch){
     window.addEventListener("keydown", function (event){
 
       var CTRL = event.ctrlKey,
@@ -235,12 +240,7 @@
 
       if(CTRL && S){
         event.preventDefault();
-
-        var state = getState();
-        dispatch.call("save", null, Object.assign({
-          html: state.htmlChange
-        }, state.navigated));
-
+        dispatch.call("save");
       } else if(CTRL && RIGHT){
         dispatch.call("next");
       } else if(CTRL && LEFT){
