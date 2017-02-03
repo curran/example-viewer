@@ -109,22 +109,20 @@
 
   
   function Store(actions){
-    var dispatch = d3.dispatch.apply(null, actions);
-    var getState = (function (state){
-      actions.forEach(function (type){
-        dispatch.on(type + ".getState", function (arg){
-          var newState = {};
-          newState[type] = arg;
-          state = Object.assign(state, newState);
-        });
+    var dispatch = d3.dispatch.apply(null, actions),
+        state = {};
+
+    actions.forEach(function (type){
+      dispatch.on(type + ".getState", function (arg){
+        var newState = {};
+        newState[type] = arg;
+        state = Object.assign(state, newState);
       });
-      return function (){
-        return state;
-      };
-    }({}));
+    });
+
     return {
       dispatch: dispatch,
-      getState: getState
+      getState: function (){ return state; }
     };
   }
 
