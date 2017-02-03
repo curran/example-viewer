@@ -95,34 +95,41 @@
   var dispatch = d3.dispatch.apply(null, actions);
 
   var getState = (function (state){
-    Object.keys(dispatch._).forEach(function (type){
+    actions.forEach(function (type){
       dispatch.on(type + ".getState", function (arg){
         var newState = {};
         newState[type] = arg;
         state = Object.assign(state, newState);
       });
     });
-    return function (){ return state; }
+    return function (){
+      return state;
+    };
   }({}));
+
+  var store = {
+    dispatch: dispatch,
+    getState: getState
+  };
 
   var body = d3.select("body");
 
-  Header(body, dispatch);
-  Editor(body, dispatch);
-  Runner(body, dispatch);
-  Overlay(body, dispatch);
-  Server(dispatch, getState);
-  Keyboard(dispatch);
-  Router(dispatch);
-  Navigator(dispatch, getState);
+  Header(store, body);
+  Editor(store, body);
+  Runner(store, body);
+  Overlay(store, body);
+  Server(store)
+  Keyboard(store);
+  Router(store);
+  Navigator(store);
 
 
-  function Header(selection, dispatch){
+  function Header(store, selection){
     var header = selection.append("div").attr("class", "header"),
         breadcrumbs = header.append("div").attr("class", "header-breadcrumbs"),
         title = header.append("div").attr("class", "header-title");
 
-    dispatch.on("navigated.header", function (params){
+    store.dispatch.on("navigated.header", function (params){
       breadcrumbs.text([
         "Unit " + params.unit,
         "Module " + params.module,
@@ -130,13 +137,13 @@
       ].join(" / "));
     });
 
-    dispatch.on("htmlChange.header", function (html){
+    store.dispatch.on("htmlChange.header", function (html){
       title.text(html.match(/title>(.*?)</)[1]);
     });
   }
 
 
-  function Editor(selection, dispatch){
+  function Editor(store, selection){
     var code = selection.append("div").attr("class", "shadow"),
         editor = CodeMirror(code.node(), {
           lineNumbers: false,
@@ -148,16 +155,16 @@
 
     editor.on("change", function (editor, change){
       if(change.origin === "setValue") return;
-      dispatch.call("htmlChange", null, editor.getValue());
+      store.dispatch.call("htmlChange", null, editor.getValue());
     });
 
-    dispatch.on("htmlFetch.editor", function (html){
+    store.dispatch.on("htmlFetch.editor", function (html){
       editor.setValue(html);
     });
   }
 
 
-  function Runner(selection, dispatch){
+  function Runner(store, selection){
     var iframe = selection.append("iframe").attr("class", "shadow runner")
       .attr("width", "960") // 960 X 500 is standard for bl.ocks.org.
       .attr("height", "500")
@@ -166,13 +173,13 @@
       .attr("frameborder", "0px")
       .attr("scrolling", "no");
 
-    dispatch.on("htmlChange.runner", function (html){
+    store.dispatch.on("htmlChange.runner", function (html){
       iframe.attr("srcdoc", html);
     });
   }
 
   
-  function Overlay(selection, dispatch){
+  function Overlay(store, selection){
     var div = selection.append("div").attr("class", "overlay"),
         svg = div.append("svg");
 
@@ -197,12 +204,12 @@
           .remove();
     }
     
-    dispatch.on("saved.overlay", notify);
+    store.dispatch.on("saved.overlay", notify);
   }
 
 
-  function Server(dispatch, getState){
-    dispatch.on("navigated.server", function (params){
+  function Server(store){
+    store.dispatch.on("navigated.server", function (params){
       var url = [
         "units",
         "unit-" + params.unit,
@@ -218,7 +225,7 @@
       });
     });
 
-    dispatch.on("save.server", function (){
+    store.dispatch.on("save.server", function (){
 
       var data = Object.assign({
         html: getState().htmlChange
@@ -227,12 +234,12 @@
       d3.request("save")
         .header("Content-Type", "application/json")
         .post(JSON.stringify(data), function (xhr){
-          dispatch.call("saved", null, xhr.responseText);
+          store.dispatch.call("saved", null, xhr.responseText);
         });
     });
   }
 
-  function Keyboard(dispatch){
+  function Keyboard(store){
     window.addEventListener("keydown", function (event){
 
       var CTRL = event.ctrlKey,
@@ -242,30 +249,30 @@
 
       if(CTRL && S){
         event.preventDefault();
-        dispatch.call("save");
+        store.dispatch.call("save");
       } else if(CTRL && RIGHT){
-        dispatch.call("next");
+        store.dispatch.call("next");
       } else if(CTRL && LEFT){
-        dispatch.call("previous");
+        store.dispatch.call("previous");
       }
     });
   }
 
 
-  function Router(dispatch){
+  function Router(store){
     var defaultParams = { unit: 1, module: 1, example: 1, };
 
     window.addEventListener("hashchange", navigate);
     navigate();
 
-    dispatch.on("navigate", function (params){
+    store.dispatch.on("navigate", function (params){
       location.hash = encodeHash(params);
     });
 
     function navigate(){
       var params = parseHash();
       if(params){
-        dispatch.call("navigated", null, params);
+        store.dispatch.call("navigated", null, params);
       } else {
         location.hash = encodeHash(defaultParams);
       }
@@ -289,13 +296,13 @@
   }
 
 
-  function Navigator(dispatch, getState){
-    dispatch.on("next", go(1));
-    dispatch.on("previous", go(-1));
+  function Navigator(store){
+    store.dispatch.on("next", go(1));
+    store.dispatch.on("previous", go(-1));
     function go(increment){
       return function (){
         var navigated = getState().navigated;
-        dispatch.call("navigate", null, Object.assign(navigated, {
+        store.dispatch.call("navigate", null, Object.assign(navigated, {
           example: navigated.example + increment
         }));
       }
