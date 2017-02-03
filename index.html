@@ -81,29 +81,31 @@
     <script>
 (function (){
 
-  var actions = [
-    "htmlFetch", // When the HTML content is fetched from the server.
-    "htmlChange", // When the HTML content is changed.
-    "save", // When a save was requested.
-    "saved", // After a save occurred.
-    "navigate", // When a navigation was requested.
-    "navigated", // After navigation occurred (after a route change).
-    "next", // When the user wants to go to the next example.
-    "previous" // When the user wants to go to the previous example.
-  ]
+  main();
 
-  var store = Store(actions);
+  function main(){
+    var store = Store([
+          "htmlFetch", // When the HTML content is fetched from the server.
+          "htmlChange", // When the HTML content is changed.
+          "save", // When a save was requested.
+          "saved", // After a save occurred.
+          "navigate", // When a navigation was requested.
+          "navigated", // After navigation occurred (after a route change).
+          "next", // When the user wants to go to the next example.
+          "previous" // When the user wants to go to the previous example.
+        ]),
+        body = d3.select("body");
 
-  var body = d3.select("body");
+    Header(store, body);
+    Editor(store, body);
+    Runner(store, body);
+    Overlay(store, body);
 
-  Header(store, body);
-  Editor(store, body);
-  Runner(store, body);
-  Overlay(store, body);
-  Server(store)
-  Keyboard(store);
-  Router(store);
-  Navigator(store);
+    Server(store)
+    Keyboard(store);
+    Router(store);
+    Navigator(store);
+  }
 
   
   function Store(actions){
