@@ -87,7 +87,9 @@
     "save", // When a save was requested.
     "saved", // After a save occurred.
     "navigate", // When a navigation was requested.
-    "navigated" // After navigation occurred (after a route change).
+    "navigated", // After navigation occurred (after a route change).
+    "next", // When the user wants to go to the next example.
+    "previous" // When the user wants to go to the previous example.
   );
 
   var getState = (function (state){
@@ -110,6 +112,7 @@
   Server(dispatch);
   Keyboard(dispatch, getState);
   Router(dispatch);
+  Navigator(dispatch, getState);
 
 
   function Header(selection, dispatch){
@@ -239,12 +242,9 @@
         }, state.navigated));
 
       } else if(CTRL && RIGHT){
-        console.log("next");
-        //dispatch.call("next");
-
+        dispatch.call("next");
       } else if(CTRL && LEFT){
-        console.log("previous");
-        //dispatch.call("previous");
+        dispatch.call("previous");
       }
     });
   }
@@ -255,6 +255,10 @@
 
     window.addEventListener("hashchange", navigate);
     navigate();
+
+    dispatch.on("navigate", function (params){
+      location.hash = encodeHash(params);
+    });
 
     function navigate(){
       var params = parseHash();
@@ -268,13 +272,31 @@
     function parseHash(){
       var path = location.hash.substr(1).split("/");
       if(path.length === 3){
-        return { unit: path[0], module: path[1], example: path[2] };
+        return {
+          unit: +path[0],
+          module: +path[1],
+          example: +path[2]
+        };
       }
       return null;
     }
 
     function encodeHash(params){
       return "#" + params.unit + "/" + params.module + "/" + params.example;
+    }
+  }
+
+
+  function Navigator(dispatch, getState){
+    dispatch.on("next", go(1));
+    dispatch.on("previous", go(-1));
+    function go(increment){
+      return function (){
+        var navigated = getState().navigated;
+        dispatch.call("navigate", null, Object.assign(navigated, {
+          example: navigated.example + increment
+        }));
+      }
     }
   }
 
