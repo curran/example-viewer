@@ -91,19 +91,14 @@
 
     var actions = {
       navigated: function (params){
-        return {
-          type: "NAVIGATED",
-          params: params
-        };
+        return { type: "NAVIGATED", params: params };
+      },
+      next: function (params){
+        return { type: "NEXT" };
+      },
+      previous: function (params){
+        return { type: "PREVIOUS" };
       }
-//    store.dispatch.on("navigate", function (params){
-//      location.hash = encodeHash(params);
-//    });
-//      fetchFile: function (){
-//        return function (dispatch){
-//        }
-//      }
-      //fetchFile: function (){ return { type: "REQUEST_FILE" }; }
     };
 
     var reducer = function (state, action){
@@ -113,8 +108,20 @@
           return Object.assign(state, {
             params: action.params
           });
+        case "NEXT":
+          return go(state, 1);
+        case "PREVIOUS":
+          return go(state, -1);
         default:
           return state;
+      }
+
+      function go(state, increment){
+        return Object.assign(state, {
+          params: Object.assign(state.params, {
+            example: state.params.example + increment
+          })
+        });
       }
     }
 
@@ -148,19 +155,21 @@
   }
 
   function App(store, actions){
+
     var router = Router(store, actions);
+    Keyboard(store, actions);
     //var header = Header(store );
     //Editor(store);
     //Runner(store);
     //Overlay(store);
     //Server(store)
-    //Keyboard(store);
     //Router(store);
     //Navigator(store);
 
     return function(selection){
       selection.each(function (state){
         if(state.params){
+          router(state.params);
           var pre = d3.select(this).selectAll("pre").data([1]);
           pre = pre.merge(pre.enter().append("pre"));
           pre.text(JSON.stringify(state.params, null, 2));
@@ -201,9 +210,30 @@
     function encodeHash(params){
       return "#" + params.unit + "/" + params.module + "/" + params.example;
     }
+
+    return function (params){
+      var newHash = encodeHash(params);
+      if(location.hash != newHash){
+        location.hash = newHash;
+      }
+    }
   }
 
 
+  // Translates global keyboard events into dispatched actions.
+  function Keyboard(store, actions){
+    window.addEventListener("keydown", function (e){
+
+      var CTRL = e.ctrlKey,
+          S = e.which === 83,
+          RIGHT = e.which === 39,
+          LEFT = e.which === 37;
+
+      if(CTRL && S){ store.dispatch(actions.save()); e.preventDefault(); }
+      if(CTRL && RIGHT){ store.dispatch(actions.next()); }
+      if(CTRL && LEFT){ store.dispatch(actions.previous()); }
+    });
+  }
 
 
   // User interface component for the header text (top left).
@@ -325,39 +355,6 @@
   }
 
 
-  // Translates global keyboard events into dispatched actions.
-  function Keyboard(store){
-    window.addEventListener("keydown", function (e){
-
-      var CTRL = e.ctrlKey,
-          S = e.which === 83,
-          RIGHT = e.which === 39,
-          LEFT = e.which === 37;
-
-      if(CTRL && S){ store.dispatch.call("save"); e.preventDefault(); }
-      if(CTRL && RIGHT){ store.dispatch.call("next"); }
-      if(CTRL && LEFT){ store.dispatch.call("previous"); }
-    });
-  }
-
-
-
-
-  // Translates "next" and "previous" actions into "navigate" actions.
-  function Navigator(store){
-
-    store.dispatch.on("next", go(1));
-    store.dispatch.on("previous", go(-1));
-
-    function go(increment){
-      return function (){
-        var navigated = store.getState().navigated;
-        store.dispatch.call("navigate", null, Object.assign(navigated, {
-          example: navigated.example + increment
-        }));
-      }
-    }
-  }
 }());
     </script>
   </body>
