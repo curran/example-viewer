@@ -89,6 +89,15 @@
 
   function main(){
 
+    var rootReducer = function (state, action){
+      return state || {};
+    }
+
+    console.log(ReduxThunk);
+    var store = Redux.createStore(rootReducer, 
+      Redux.applyMiddleware(ReduxThunk.default)
+    );
+
     var store = Store([
           "htmlFetch", // When the HTML content is fetched from the server.
           "htmlChange", // When the HTML content is changed.
