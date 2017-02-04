@@ -342,39 +342,36 @@
     var previousTime = 0;
     return function (selection){
       selection.each(function (state){
+
         d3.select(this).selectAll(".overlay").data([1])
           .enter().append("div").attr("class", "overlay")
           .append("svg");
+
         if(state.notify && state.notify.time !== previousTime){
-          console.log(state.notify.message);
           previousTime = state.notify.time;
+
+          var div = d3.select(this).select(".overlay").node(),
+              width = div.clientWidth,
+              height = div.clientHeight;
+          d3.select(div).select("svg")
+              .attr("width", width)
+              .attr("height", height)
+            .append("text")
+              .attr("x", width / 2)
+              .attr("y", height / 2)
+              .attr("text-anchor", "middle")
+              .attr("alignment-baseline", "middle")
+              .style("text-shadow", "0px 0px 5px white")
+              .attr("font-size", "20em")
+              .attr("opacity", 1)
+              .text(state.notify.message)
+            .transition().duration(700).ease(d3.easeLinear)
+              .attr("font-size", "23em")
+              .attr("opacity", 0)
+              .remove();
         }
       });
     };
-
-
-    //function notify(message){
-    //  var width = div.node().clientWidth,
-    //      height = div.node().clientHeight;
-    //  svg
-    //      .attr("width", width)
-    //      .attr("height", height)
-    //    .append("text")
-    //      .attr("x", width / 2)
-    //      .attr("y", height / 2)
-    //      .attr("text-anchor", "middle")
-    //      .attr("alignment-baseline", "middle")
-    //      .style("text-shadow", "0px 0px 5px white")
-    //      .attr("font-size", "20em")
-    //      .attr("opacity", 1)
-    //      .text(message)
-    //    .transition().duration(700).ease(d3.easeLinear)
-    //      .attr("font-size", "23em")
-    //      .attr("opacity", 0)
-    //      .remove();
-    //}
-    //
-    //store.dispatch.on("saved.overlay", notify);
   }
 
 
