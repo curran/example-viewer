@@ -287,20 +287,31 @@
     //});
 
     // TODO componentize this properly.
-    var code = d3.select("body").append("div").attr("class", "shadow");
-    var editor = CodeMirror(code.node(), {
-      lineNumbers: false,
-      mode: "htmlmixed"
-    });
+
+    var codemirror = d3.local();
 
     return function (selection){
-
-      // Inlet provides the interactive sliders and color pickers.
-      Inlet(editor);
-
       selection.each(function (state){
+
+        var editor = d3.select(this).selectAll(".editor").data([1]);
+        editor = editor.merge(
+          editor.enter().append("div")
+            .attr("class", "editor shadow")
+            .each(function (){
+              codemirror.set(this, CodeMirror(this, {
+                lineNumbers: false,
+                mode: "htmlmixed"
+              }));
+
+              // Inlet provides the interactive sliders and color pickers.
+              Inlet(codemirror.get(this));
+            }));
+
+
         if(state.html){
-          editor.setValue(state.html);
+          editor.each(function (){
+            codemirror.get(this).setValue(state.html);
+          });
         }
       });
     };
