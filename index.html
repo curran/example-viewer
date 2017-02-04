@@ -89,11 +89,22 @@
 
   function main(){
 
+    // Redux actions.
     var actions = {
+
+      // After navigation occurred (after a route change).
       navigated: function (params){ return { type: "NAVIGATED", params: params }; },
-      next: function (){            return { type: "NEXT" }; },
-      previous: function (){        return { type: "PREVIOUS" }; },
-      changeHtml: function (html){  return { type: "CHANGE_HTML", html: html}; },
+
+      // When the user wants to go to the next example.
+      next: function (){ return { type: "NEXT" }; },
+
+      // When the user wants to go to the previous example.
+      previous: function (){ return { type: "PREVIOUS" }; },
+
+      // When the HTML content is changed.
+      changeHtml: function (html){ return { type: "CHANGE_HTML", html: html}; },
+
+      // Fetches the HTML content from the server (uses thunk middleware).
       fetchHtml: function (){
         return function (dispatch, getState){
           var params = getState().params;
@@ -109,6 +120,8 @@
           });
         }
       },
+
+      // Saves the HTML content to the server (uses thunk middleware).
       save: function (){
         return function (dispatch, getState){
           d3.request("save")
@@ -118,27 +131,27 @@
             });
         };
       },
+      
+      // After a save occurred.
       saved: function (message){
-        return {
-          type: "SAVED",
-          message: message,
-          time: Date.now()
-        };
+        return { type: "SAVED", message: message, time: Date.now() };
       }
     };
 
+    // The Redux reducer.
     var reducer = function (state, action){
       state = state || {};
       switch (action.type) {
-        case "NAVIGATED":   return Object.assign(state, { params: action.params });
+        case "NAVIGATED": return Object.assign(state, { params: action.params });
         case "CHANGE_HTML": return Object.assign(state, { html: action.html });
-        case "NEXT":     return go(state, 1);
+        case "NEXT": return go(state, 1);
         case "PREVIOUS": return go(state, -1);
         case "SAVED": return Object.assign(state, { notify: action });
         default: return state;
       }
     }
 
+    // Goes to the next or previous state (used in reducer).
     function go(state, increment){
       return Object.assign(state, {
         params: Object.assign(state.params, {
@@ -147,45 +160,32 @@
       });
     }
 
-    var store = Redux.createStore(reducer, 
-      Redux.applyMiddleware(ReduxThunk.default)
-    );
+    // The Redux store.
+    var store = Redux.createStore(reducer, Redux.applyMiddleware(ReduxThunk.default));
 
-    //var store = Store([
-    //      "htmlFetch", // When the HTML content is fetched from the server.
-    //      "htmlChange", // When the HTML content is changed.
-    //      "save", // When a save was requested.
-    //      "saved", // After a save occurred.
-    //      "navigate", // When a navigation was requested.
-    //      "navigated", // After navigation occurred (after a route change).
-    //      "next", // When the user wants to go to the next example.
-    //      "previous" // When the user wants to go to the previous example.
-    //    ]),
+    // Smart components.
+    var router = Router(store, actions),
+        editor = Editor(store, actions),
+        keyboard = Keyboard(store, actions);
 
-    var router = Router(store, actions);
-    var header = Header();
-    var editor = Editor(store, actions);
-    var runner = Runner();
-    var notifier = Notifier();
-    //Server(store)
-    //Router(store);
-    //Navigator(store);
+    // Dumb components.
+    var header = Header(),
+        runner = Runner(),
+        notifier = Notifier();
 
-    render();
-    store.subscribe(render);
-    function render(){
+    // Respond to changes in state.
+    store.subscribe(function (){
 
-      d3.select("body")
-        .datum(store.getState())
+      // Render user interface components.
+      d3.select("body").datum(store.getState())
         .call(header)
         .call(editor)
         .call(runner)
         .call(notifier);
 
+      // Update the route if a navigation occurred.
       router();
-    }
-
-    Keyboard(store, actions);
+    });
   }
 
 
@@ -193,9 +193,8 @@
   function Router(store, actions){
     var defaultParams = { unit: 1, module: 1, example: 1 };
 
-    window.addEventListener("hashchange", navigate);
     navigate();
-
+    window.addEventListener("hashchange", navigate);
     function navigate(){
       var params = parseHash();
       if(params){
@@ -209,11 +208,7 @@
     function parseHash(){
       var path = location.hash.substr(1).split("/");
       if(path.length === 3){
-        return {
-          unit: +path[0],
-          module: +path[1],
-          example: +path[2]
-        };
+        return { unit: +path[0], module: +path[1], example: +path[2] };
       }
       return null;
     }
@@ -235,13 +230,14 @@
   function Header(){
     return function (selection){
       selection.each(function (state){
-        var headerEnter = d3.select(this).selectAll(".header").data([1])
-          .enter().append("div").attr("class", "header");
-        headerEnter.append("div").attr("class", "header-breadcrumbs"),
+        var header = d3.select(this).selectAll(".header").data([1]);
+        var headerEnter = header.enter().append("div").attr("class", "header");
+        headerEnter.append("div").attr("class", "header-breadcrumbs");
         headerEnter.append("div").attr("class", "header-title");
+        header = header.merge(headerEnter);
 
         if(state.params){
-          d3.select(".header-breadcrumbs")
+          header.select(".header-breadcrumbs")
             .text([
               "Unit " + state.params.unit,
               "Module " + state.params.module,
@@ -250,7 +246,7 @@
         }
 
         if(state.html){
-          d3.select(".header-title")
+          header.select(".header-title")
             .text(state.html.match(/title>(.*?)</)[1]);
         }
       });
@@ -312,6 +308,7 @@
     });
   }
 
+
   // User interface component for the running example (top right).
   function Runner(){
     var previousHtml = "";
@@ -348,11 +345,10 @@
           .append("svg");
 
         if(state.notify && state.notify.time !== previousTime){
-          previousTime = state.notify.time;
-
           var div = d3.select(this).select(".overlay").node(),
               width = div.clientWidth,
               height = div.clientHeight;
+
           d3.select(div).select("svg")
               .attr("width", width)
               .attr("height", height)
@@ -369,36 +365,12 @@
               .attr("font-size", "23em")
               .attr("opacity", 0)
               .remove();
+
+          previousTime = state.notify.time;
         }
       });
     };
   }
-
-
-  // Deals with interactions between the browser and server.
-  function Server(store){
-
-    store.dispatch.on("navigated.server", function (params){
-      var url = [
-        "units",
-        "unit-" + params.unit,
-        "module-" + params.module,
-        "example-" + params.example,
-        "index.html"
-      ].join("/");
-
-      d3.request(url).get(function (xhr){
-        var html = xhr.responseText;
-        store.dispatch.call("htmlFetch", null, html);
-        store.dispatch.call("htmlChange", null, html);
-      });
-    });
-
-    store.dispatch.on("save.server", function (){
-    });
-  }
-
-
 }());
     </script>
   </body>
