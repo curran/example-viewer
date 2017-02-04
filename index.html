@@ -122,23 +122,27 @@
       body.datum(store.getState()).call(app);
     }
 
-    //Editor(store, body);
-    //Runner(store, body);
-    //Overlay(store, body);
-
-    //Server(store)
-    //Keyboard(store);
-    //Router(store);
-    //Navigator(store);
   }
 
 
   function App(store){
     //var header = Header(store );
+    //Editor(store);
+    //Runner(store);
+    //Overlay(store);
+    //Server(store)
+    //Keyboard(store);
+    //Router(store);
+    //Navigator(store);
+
     return function(selection){
-      selection.selectAll("h1").data([1])
-        .enter().append("h1")
-          .text("Hello Redux + D3");
+      selection.each(function (state){
+        d3.select(this)
+          .selectAll("h1")
+            .data([1])
+          .enter().append("h1")
+            .text("Hello Redux + D3");
+      });
     };
   }
 
