@@ -122,25 +122,20 @@
     var reducer = function (state, action){
       state = state || {};
       switch (action.type) {
-        case "NAVIGATED":
-          return Object.assign(state, { params: action.params });
-        case "NEXT":
-          return go(state, 1);
-        case "PREVIOUS":
-          return go(state, -1);
-        case "CHANGE_HTML":
-          return Object.assign(state, { html: action.html });
-        default:
-          return state;
+        case "NAVIGATED":   return Object.assign(state, { params: action.params });
+        case "CHANGE_HTML": return Object.assign(state, { html: action.html });
+        case "NEXT":     return go(state, 1);
+        case "PREVIOUS": return go(state, -1);
+        default: return state;
       }
+    }
 
-      function go(state, increment){
-        return Object.assign(state, {
-          params: Object.assign(state.params, {
-            example: state.params.example + increment
-          })
-        });
-      }
+    function go(state, increment){
+      return Object.assign(state, {
+        params: Object.assign(state.params, {
+          example: state.params.example + increment
+        })
+      });
     }
 
     var store = Redux.createStore(reducer, 
@@ -161,8 +156,7 @@
     var router = Router(store, actions);
     var header = Header();
     var editor = Editor(store, actions);
-
-    //Runner(store);
+    var runner = Runner();
     //Overlay(store);
     //Server(store)
     //Router(store);
@@ -171,11 +165,14 @@
     render();
     store.subscribe(render);
     function render(){
-      router();
+
       d3.select("body")
         .datum(store.getState())
         .call(header)
-        .call(editor);
+        .call(editor)
+        .call(runner);
+
+      router();
     }
 
     Keyboard(store, actions);
@@ -310,38 +307,45 @@
     });
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   // User interface component for the running example (top right).
-  function Runner(store, selection){
-    var iframe = selection.append("iframe").attr("class", "shadow runner")
-      .attr("width", "960") // 960 X 500 is standard for bl.ocks.org.
-      .attr("height", "500")
-      .attr("marginwidth", "0") // Have no margin to match with bl.ocks.org.
-      .attr("marginheight", "0")
-      .attr("frameborder", "0px")
-      .attr("scrolling", "no");
+  function Runner(){
+    var previousHtml = "";
+    return function (selection){
+      selection.each(function (state){
+        var iframe = d3.select(this).selectAll(".runner").data([1]);
+        iframe = iframe.merge(iframe.enter().append("iframe")
+          .attr("class", "shadow runner")
+          .attr("width", "960") // 960 X 500 is standard for bl.ocks.org.
+          .attr("height", "500")
+          .attr("marginwidth", "0") // Have no margin to match with bl.ocks.org.
+          .attr("marginheight", "0")
+          .attr("frameborder", "0px")
+          .attr("scrolling", "no"));
 
-    store.dispatch.on("htmlChange.runner", function (html){
-      iframe.attr("srcdoc", html);
-    });
+        if(state.html !== previousHtml){
+          iframe.attr("srcdoc", state.html);
+          previousHtml = state.html;
+        }
+
+      });
+    };
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   
   // User interface component for the notification overlay (displays "Saved!").
