@@ -90,18 +90,10 @@
   function main(){
 
     var actions = {
-      navigated: function (params){
-        return { type: "NAVIGATED", params: params };
-      },
-      next: function (){
-        return { type: "NEXT" };
-      },
-      previous: function (){
-        return { type: "PREVIOUS" };
-      },
-      changeHtml: function (html){
-        return { type: "CHANGE_HTML", html: html};
-      },
+      navigated: function (params){ return { type: "NAVIGATED", params: params }; },
+      next: function (){            return { type: "NEXT" }; },
+      previous: function (){        return { type: "PREVIOUS" }; },
+      changeHtml: function (html){  return { type: "CHANGE_HTML", html: html}; },
       fetchHtml: function (){
         return function (dispatch, getState){
           var params = getState().params;
@@ -117,6 +109,16 @@
           });
         }
       },
+      save: function (){
+        return function (dispatch, getState){
+          d3.request("save")
+            .header("Content-Type", "application/json")
+            .post(JSON.stringify(getState()), function (xhr){
+              dispatch(actions.saved(xhr.responseText));
+            });
+        };
+      },
+      saved: function (message){ return { type: "SAVED", message: message }; },
     };
 
     var reducer = function (state, action){
@@ -126,6 +128,7 @@
         case "CHANGE_HTML": return Object.assign(state, { html: action.html });
         case "NEXT":     return go(state, 1);
         case "PREVIOUS": return go(state, -1);
+        case "SAVED": console.log(action.message); return state;
         default: return state;
       }
     }
@@ -250,11 +253,7 @@
 
   // User interface component for the code editor.
   function Editor(store, actions){
-
-
     var codemirror = d3.local();
-
-    // TODO componentize this properly.
     return function (selection){
       selection.each(function (state){
 
@@ -279,7 +278,6 @@
 
               codemirror.set(this, cm);
             }));
-
 
         if(state.html){
           editor.each(function (){
@@ -398,13 +396,6 @@
     });
 
     store.dispatch.on("save.server", function (){
-      var state = store.getState(),
-          data = Object.assign({ html: state.htmlChange }, state.navigated);
-      d3.request("save")
-        .header("Content-Type", "application/json")
-        .post(JSON.stringify(data), function (xhr){
-          store.dispatch.call("saved", null, xhr.responseText);
-        });
     });
   }
 
