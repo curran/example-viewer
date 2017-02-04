@@ -118,7 +118,13 @@
             });
         };
       },
-      saved: function (message){ return { type: "SAVED", message: message }; },
+      saved: function (message){
+        return {
+          type: "SAVED",
+          message: message,
+          time: Date.now()
+        };
+      }
     };
 
     var reducer = function (state, action){
@@ -128,7 +134,7 @@
         case "CHANGE_HTML": return Object.assign(state, { html: action.html });
         case "NEXT":     return go(state, 1);
         case "PREVIOUS": return go(state, -1);
-        case "SAVED": console.log(action.message); return state;
+        case "SAVED": return Object.assign(state, { notify: action });
         default: return state;
       }
     }
@@ -160,7 +166,7 @@
     var header = Header();
     var editor = Editor(store, actions);
     var runner = Runner();
-    //Overlay(store);
+    var notifier = Notifier();
     //Server(store)
     //Router(store);
     //Navigator(store);
@@ -173,7 +179,8 @@
         .datum(store.getState())
         .call(header)
         .call(editor)
-        .call(runner);
+        .call(runner)
+        .call(notifier);
 
       router();
     }
@@ -330,49 +337,44 @@
   }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
   // User interface component for the notification overlay (displays "Saved!").
-  function Overlay(store, selection){
-    var div = selection.append("div").attr("class", "overlay"),
-        svg = div.append("svg");
+  function Notifier(){
+    var previousTime = 0;
+    return function (selection){
+      selection.each(function (state){
+        d3.select(this).selectAll(".overlay").data([1])
+          .enter().append("div").attr("class", "overlay")
+          .append("svg");
+        if(state.notify && state.notify.time !== previousTime){
+          console.log(state.notify.message);
+          previousTime = state.notify.time;
+        }
+      });
+    };
 
-    function notify(message){
-      var width = div.node().clientWidth,
-          height = div.node().clientHeight;
-      svg
-          .attr("width", width)
-          .attr("height", height)
-        .append("text")
-          .attr("x", width / 2)
-          .attr("y", height / 2)
-          .attr("text-anchor", "middle")
-          .attr("alignment-baseline", "middle")
-          .style("text-shadow", "0px 0px 5px white")
-          .attr("font-size", "20em")
-          .attr("opacity", 1)
-          .text(message)
-        .transition().duration(700).ease(d3.easeLinear)
-          .attr("font-size", "23em")
-          .attr("opacity", 0)
-          .remove();
-    }
-    
-    store.dispatch.on("saved.overlay", notify);
+
+    //function notify(message){
+    //  var width = div.node().clientWidth,
+    //      height = div.node().clientHeight;
+    //  svg
+    //      .attr("width", width)
+    //      .attr("height", height)
+    //    .append("text")
+    //      .attr("x", width / 2)
+    //      .attr("y", height / 2)
+    //      .attr("text-anchor", "middle")
+    //      .attr("alignment-baseline", "middle")
+    //      .style("text-shadow", "0px 0px 5px white")
+    //      .attr("font-size", "20em")
+    //      .attr("opacity", 1)
+    //      .text(message)
+    //    .transition().duration(700).ease(d3.easeLinear)
+    //      .attr("font-size", "23em")
+    //      .attr("opacity", 0)
+    //      .remove();
+    //}
+    //
+    //store.dispatch.on("saved.overlay", notify);
   }
 
 
