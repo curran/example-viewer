@@ -90,14 +90,35 @@
   function main(){
 
     var actions = {
-      htmlFetch: function (){ return { type: "htmlFetch" }; }
+      navigated: function (params){
+        return {
+          type: "NAVIGATED",
+          params: params
+        };
+      }
+//    store.dispatch.on("navigate", function (params){
+//      location.hash = encodeHash(params);
+//    });
+//      fetchFile: function (){
+//        return function (dispatch){
+//        }
+//      }
+      //fetchFile: function (){ return { type: "REQUEST_FILE" }; }
     };
 
-    var rootReducer = function (state, action){
-      return state || {};
+    var reducer = function (state, action){
+      state = state || {};
+      switch (action.type) {
+        case "NAVIGATED":
+          return Object.assign(state, {
+            params: action.params
+          });
+        default:
+          return state;
+      }
     }
 
-    var store = Redux.createStore(rootReducer, 
+    var store = Redux.createStore(reducer, 
       Redux.applyMiddleware(ReduxThunk.default)
     );
 
@@ -113,19 +134,21 @@
     //    ]),
 
     var body = d3.select("body");
-    var app = App(store, body);
+    var app = App(store, actions);
 
     render();
     store.subscribe(render);
-
     function render(){
-      body.datum(store.getState()).call(app);
+      body
+        .datum(store.getState())
+        .call(app);
     }
 
+    //store.dispatch(actions.fetchFile("index.html"));
   }
 
-
-  function App(store){
+  function App(store, actions){
+    var router = Router(store, actions);
     //var header = Header(store );
     //Editor(store);
     //Runner(store);
@@ -137,14 +160,50 @@
 
     return function(selection){
       selection.each(function (state){
-        d3.select(this)
-          .selectAll("h1")
-            .data([1])
-          .enter().append("h1")
-            .text("Hello Redux + D3");
+        if(state.params){
+          var pre = d3.select(this).selectAll("pre").data([1]);
+          pre = pre.merge(pre.enter().append("pre"));
+          pre.text(JSON.stringify(state.params, null, 2));
+        }
       });
     };
   }
+
+
+  // Deals with the route, kept in the fragment identifier.
+  function Router(store, actions){
+    var defaultParams = { unit: 1, module: 1, example: 1 };
+
+    window.addEventListener("hashchange", navigate);
+    navigate();
+
+    function navigate(){
+      var params = parseHash();
+      if(params){
+        store.dispatch(actions.navigated(params));
+      } else {
+        location.hash = encodeHash(defaultParams);
+      }
+    }
+
+    function parseHash(){
+      var path = location.hash.substr(1).split("/");
+      if(path.length === 3){
+        return {
+          unit: +path[0],
+          module: +path[1],
+          example: +path[2]
+        };
+      }
+      return null;
+    }
+
+    function encodeHash(params){
+      return "#" + params.unit + "/" + params.module + "/" + params.example;
+    }
+  }
+
+
 
 
   // User interface component for the header text (top left).
@@ -282,42 +341,6 @@
   }
 
 
-  // Deals with the route, kept in the fragment identifier.
-  function Router(store){
-    var defaultParams = { unit: 1, module: 1, example: 1 };
-
-    window.addEventListener("hashchange", navigate);
-    navigate();
-
-    store.dispatch.on("navigate", function (params){
-      location.hash = encodeHash(params);
-    });
-
-    function navigate(){
-      var params = parseHash();
-      if(params){
-        store.dispatch.call("navigated", null, params);
-      } else {
-        location.hash = encodeHash(defaultParams);
-      }
-    }
-
-    function parseHash(){
-      var path = location.hash.substr(1).split("/");
-      if(path.length === 3){
-        return {
-          unit: +path[0],
-          module: +path[1],
-          example: +path[2]
-        };
-      }
-      return null;
-    }
-
-    function encodeHash(params){
-      return "#" + params.unit + "/" + params.module + "/" + params.example;
-    }
-  }
 
 
   // Translates "next" and "previous" actions into "navigate" actions.
