@@ -89,56 +89,59 @@
 
   function main(){
 
+    var actions = {
+      htmlFetch: function (){ return { type: "htmlFetch" }; }
+    };
+
     var rootReducer = function (state, action){
       return state || {};
     }
 
-    console.log(ReduxThunk);
     var store = Redux.createStore(rootReducer, 
       Redux.applyMiddleware(ReduxThunk.default)
     );
 
-    var store = Store([
-          "htmlFetch", // When the HTML content is fetched from the server.
-          "htmlChange", // When the HTML content is changed.
-          "save", // When a save was requested.
-          "saved", // After a save occurred.
-          "navigate", // When a navigation was requested.
-          "navigated", // After navigation occurred (after a route change).
-          "next", // When the user wants to go to the next example.
-          "previous" // When the user wants to go to the previous example.
-        ]),
-        body = d3.select("body");
+    //var store = Store([
+    //      "htmlFetch", // When the HTML content is fetched from the server.
+    //      "htmlChange", // When the HTML content is changed.
+    //      "save", // When a save was requested.
+    //      "saved", // After a save occurred.
+    //      "navigate", // When a navigation was requested.
+    //      "navigated", // After navigation occurred (after a route change).
+    //      "next", // When the user wants to go to the next example.
+    //      "previous" // When the user wants to go to the previous example.
+    //    ]),
 
-    Header(store, body);
-    Editor(store, body);
-    Runner(store, body);
-    Overlay(store, body);
+    var body = d3.select("body");
+    var app = App(store, body);
 
-    Server(store)
-    Keyboard(store);
-    Router(store);
-    Navigator(store);
+    render();
+    store.subscribe(render);
+
+    function render(){
+      body.datum(store.getState()).call(app);
+    }
+
+    //Editor(store, body);
+    //Runner(store, body);
+    //Overlay(store, body);
+
+    //Server(store)
+    //Keyboard(store);
+    //Router(store);
+    //Navigator(store);
   }
 
-  // A Redux-inspired store that uses d3.dispatch.
-  function Store(actions){
-    var dispatch = d3.dispatch.apply(null, actions),
-        state = {};
 
-    actions.forEach(function (type){
-      dispatch.on(type + ".getState", function (arg){
-        var newState = {};
-        newState[type] = arg;
-        state = Object.assign(state, newState);
-      });
-    });
-
-    return {
-      dispatch: dispatch,
-      getState: function (){ return state; }
+  function App(store){
+    //var header = Header(store );
+    return function(selection){
+      selection.selectAll("h1").data([1])
+        .enter().append("h1")
+          .text("Hello Redux + D3");
     };
   }
+
 
   // User interface component for the header text (top left).
   function Header(store, selection){
