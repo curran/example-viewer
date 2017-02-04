@@ -176,9 +176,9 @@
 
     var router = Router(store, actions);
     var header = Header();
+    var editor = Editor(store, actions);
 
     Keyboard(store, actions);
-    //Editor(store);
     //Runner(store);
     //Overlay(store);
     //Server(store)
@@ -191,7 +191,10 @@
 
           router(state.params);
 
-          d3.select(this).datum(state).call(header);
+          d3.select(this)
+              .datum(state)
+              .call(header)
+              .call(editor);
 
           //var pre = d3.select(this).selectAll("pre").data([1]);
           //pre = pre.merge(pre.enter().append("pre"));
@@ -275,6 +278,35 @@
   }
 
 
+  // User interface component for the code editor.
+  function Editor(store){
+
+    //editor.on("change", function (editor, change){
+    //  if(change.origin === "setValue") return;
+    //  store.dispatch.call("htmlChange", null, editor.getValue());
+    //});
+
+    // TODO componentize this properly.
+    var code = d3.select("body").append("div").attr("class", "shadow");
+    var editor = CodeMirror(code.node(), {
+      lineNumbers: false,
+      mode: "htmlmixed"
+    });
+
+    return function (selection){
+
+      // Inlet provides the interactive sliders and color pickers.
+      Inlet(editor);
+
+      selection.each(function (state){
+        if(state.html){
+          editor.setValue(state.html);
+        }
+      });
+    };
+  }
+
+
   // Translates global keyboard events into dispatched actions.
   function Keyboard(store, actions){
     window.addEventListener("keydown", function (e){
@@ -285,28 +317,6 @@
       if(CTRL && S){ store.dispatch(actions.save()); e.preventDefault(); }
       if(CTRL && RIGHT){ store.dispatch(actions.next()); }
       if(CTRL && LEFT){ store.dispatch(actions.previous()); }
-    });
-  }
-
-
-  // User interface component for the code editor.
-  function Editor(store, selection){
-    var code = selection.append("div").attr("class", "shadow"),
-        editor = CodeMirror(code.node(), {
-          lineNumbers: false,
-          mode: "htmlmixed"
-        });
-
-    // Inlet provides the interactive sliders and color pickers.
-    Inlet(editor);
-
-    editor.on("change", function (editor, change){
-      if(change.origin === "setValue") return;
-      store.dispatch.call("htmlChange", null, editor.getValue());
-    });
-
-    store.dispatch.on("htmlFetch.editor", function (html){
-      editor.setValue(html);
     });
   }
 
