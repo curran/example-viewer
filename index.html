@@ -93,12 +93,30 @@
       navigated: function (params){
         return { type: "NAVIGATED", params: params };
       },
-      next: function (params){
+      next: function (){
         return { type: "NEXT" };
       },
-      previous: function (params){
+      previous: function (){
         return { type: "PREVIOUS" };
-      }
+      },
+      fetchHtml: function (){
+        return function (dispatch, getState){
+          var params = getState().params;
+          var url = [
+            "units",
+            "unit-" + params.unit,
+            "module-" + params.module,
+            "example-" + params.example,
+            "index.html"
+          ].join("/");
+          d3.request(url).get(function (xhr){
+            dispatch(actions.receiveHtml(xhr.responseText));;
+          });
+        }
+      },
+      receiveHtml: function (html){
+        return { type: "RECEIVE_HTML", html: html };
+      },
     };
 
     var reducer = function (state, action){
@@ -110,6 +128,8 @@
           return go(state, 1);
         case "PREVIOUS":
           return go(state, -1);
+        case "RECEIVE_HTML":
+          return Object.assign(state, { html: action.html });
         default:
           return state;
       }
@@ -171,7 +191,7 @@
 
           router(state.params);
 
-          d3.select(this).datum(state.params).call(header);
+          d3.select(this).datum(state).call(header);
 
           //var pre = d3.select(this).selectAll("pre").data([1]);
           //pre = pre.merge(pre.enter().append("pre"));
@@ -193,6 +213,7 @@
       var params = parseHash();
       if(params){
         store.dispatch(actions.navigated(params));
+        store.dispatch(actions.fetchHtml());
       } else {
         location.hash = encodeHash(defaultParams);
       }
@@ -226,23 +247,29 @@
   // User interface component for the header text (top left).
   function Header(){
     return function (selection){
-      selection.each(function (params){
+      selection.each(function (state){
+
+        var params = state.params;
+        var html = state.html;
+
         var headerEnter = d3.select(this).selectAll(".header").data([1])
           .enter().append("div").attr("class", "header");
         headerEnter.append("div").attr("class", "header-breadcrumbs"),
         headerEnter.append("div").attr("class", "header-title");
 
-        d3.select(".header-breadcrumbs")
-          .text([
-            "Unit " + params.unit,
-            "Module " + params.module,
-            "Example " + params.example
-          ].join(" / "));
+        if(params){
+          d3.select(".header-breadcrumbs")
+            .text([
+              "Unit " + params.unit,
+              "Module " + params.module,
+              "Example " + params.example
+            ].join(" / "));
+        }
 
-        // TODO get the html content here.
-        //d3.select(".header-title")
-        //  .text(html.match(/title>(.*?)</)[1]);
-
+        if(html){
+          d3.select(".header-title")
+            .text(html.match(/title>(.*?)</)[1]);
+        }
       });
     }
   }
