@@ -85,9 +85,7 @@
     <script>
 (function (){
 
-  main();
-
-  function main(){
+  (function main(){
 
     // Redux actions.
     var actions = {
@@ -186,7 +184,7 @@
       // Update the route if a navigation occurred.
       router();
     });
-  }
+  }());
 
 
   // Deals with the route, kept in the fragment identifier.
@@ -259,13 +257,11 @@
     var codemirror = d3.local();
     return function (selection){
       selection.each(function (state){
-
         var editor = d3.select(this).selectAll(".editor").data([1]);
         editor = editor.merge(
           editor.enter().append("div")
             .attr("class", "editor shadow")
             .each(function (){
-
               var cm = CodeMirror(this, {
                 lineNumbers: false,
                 mode: "htmlmixed"
@@ -328,7 +324,6 @@
           iframe.attr("srcdoc", state.html);
           previousHtml = state.html;
         }
-
       });
     };
   }
