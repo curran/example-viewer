@@ -99,6 +99,9 @@
       previous: function (){
         return { type: "PREVIOUS" };
       },
+      changeHtml: function (html){
+        return { type: "CHANGE_HTML", html: html};
+      },
       fetchHtml: function (){
         return function (dispatch, getState){
           var params = getState().params;
@@ -110,12 +113,9 @@
             "index.html"
           ].join("/");
           d3.request(url).get(function (xhr){
-            dispatch(actions.receiveHtml(xhr.responseText));;
+            dispatch(actions.changeHtml(xhr.responseText));;
           });
         }
-      },
-      receiveHtml: function (html){
-        return { type: "RECEIVE_HTML", html: html };
       },
     };
 
@@ -128,7 +128,7 @@
           return go(state, 1);
         case "PREVIOUS":
           return go(state, -1);
-        case "RECEIVE_HTML":
+        case "CHANGE_HTML":
           return Object.assign(state, { html: action.html });
         default:
           return state;
@@ -158,50 +158,27 @@
     //      "previous" // When the user wants to go to the previous example.
     //    ]),
 
-    var body = d3.select("body");
-    var app = App(store, actions);
-
-    render();
-    store.subscribe(render);
-    function render(){
-      body
-        .datum(store.getState())
-        .call(app);
-    }
-
-    //store.dispatch(actions.fetchFile("index.html"));
-  }
-
-  function App(store, actions){
-
     var router = Router(store, actions);
     var header = Header();
     var editor = Editor(store, actions);
 
-    Keyboard(store, actions);
     //Runner(store);
     //Overlay(store);
     //Server(store)
     //Router(store);
     //Navigator(store);
 
-    return function(selection){
-      selection.each(function (state){
-        if(state.params){
+    render();
+    store.subscribe(render);
+    function render(){
+      router();
+      d3.select("body")
+        .datum(store.getState())
+        .call(header)
+        .call(editor);
+    }
 
-          router(state.params);
-
-          d3.select(this)
-              .datum(state)
-              .call(header)
-              .call(editor);
-
-          //var pre = d3.select(this).selectAll("pre").data([1]);
-          //pre = pre.merge(pre.enter().append("pre"));
-          //pre.text(JSON.stringify(state.params, null, 2));
-        }
-      });
-    };
+    Keyboard(store, actions);
   }
 
 
@@ -238,8 +215,8 @@
       return "#" + params.unit + "/" + params.module + "/" + params.example;
     }
 
-    return function (params){
-      var newHash = encodeHash(params);
+    return function (){
+      var newHash = encodeHash(store.getState().params);
       if(location.hash != newHash){
         location.hash = newHash;
       }
@@ -251,27 +228,23 @@
   function Header(){
     return function (selection){
       selection.each(function (state){
-
-        var params = state.params;
-        var html = state.html;
-
         var headerEnter = d3.select(this).selectAll(".header").data([1])
           .enter().append("div").attr("class", "header");
         headerEnter.append("div").attr("class", "header-breadcrumbs"),
         headerEnter.append("div").attr("class", "header-title");
 
-        if(params){
+        if(state.params){
           d3.select(".header-breadcrumbs")
             .text([
-              "Unit " + params.unit,
-              "Module " + params.module,
-              "Example " + params.example
+              "Unit " + state.params.unit,
+              "Module " + state.params.module,
+              "Example " + state.params.example
             ].join(" / "));
         }
 
-        if(html){
+        if(state.html){
           d3.select(".header-title")
-            .text(html.match(/title>(.*?)</)[1]);
+            .text(state.html.match(/title>(.*?)</)[1]);
         }
       });
     }
@@ -279,17 +252,12 @@
 
 
   // User interface component for the code editor.
-  function Editor(store){
+  function Editor(store, actions){
 
-    //editor.on("change", function (editor, change){
-    //  if(change.origin === "setValue") return;
-    //  store.dispatch.call("htmlChange", null, editor.getValue());
-    //});
-
-    // TODO componentize this properly.
 
     var codemirror = d3.local();
 
+    // TODO componentize this properly.
     return function (selection){
       selection.each(function (state){
 
@@ -298,19 +266,30 @@
           editor.enter().append("div")
             .attr("class", "editor shadow")
             .each(function (){
-              codemirror.set(this, CodeMirror(this, {
+
+              var cm = CodeMirror(this, {
                 lineNumbers: false,
                 mode: "htmlmixed"
-              }));
+              });
 
               // Inlet provides the interactive sliders and color pickers.
-              Inlet(codemirror.get(this));
+              Inlet(cm);
+
+              cm.on("change", function (editor, change){
+                if(change.origin === "setValue") return;
+                store.dispatch(actions.changeHtml(cm.getValue()));
+              });
+
+              codemirror.set(this, cm);
             }));
 
 
         if(state.html){
           editor.each(function (){
-            codemirror.get(this).setValue(state.html);
+            var cm = codemirror.get(this);
+            if(cm.getValue() !== state.html){
+              cm.setValue(state.html);
+            }
           });
         }
       });
@@ -330,6 +309,23 @@
       if(CTRL && LEFT){ store.dispatch(actions.previous()); }
     });
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   // User interface component for the running example (top right).
