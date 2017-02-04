@@ -105,9 +105,7 @@
       state = state || {};
       switch (action.type) {
         case "NAVIGATED":
-          return Object.assign(state, {
-            params: action.params
-          });
+          return Object.assign(state, { params: action.params });
         case "NEXT":
           return go(state, 1);
         case "PREVIOUS":
@@ -157,8 +155,9 @@
   function App(store, actions){
 
     var router = Router(store, actions);
+    var header = Header();
+
     Keyboard(store, actions);
-    //var header = Header(store );
     //Editor(store);
     //Runner(store);
     //Overlay(store);
@@ -169,10 +168,14 @@
     return function(selection){
       selection.each(function (state){
         if(state.params){
+
           router(state.params);
-          var pre = d3.select(this).selectAll("pre").data([1]);
-          pre = pre.merge(pre.enter().append("pre"));
-          pre.text(JSON.stringify(state.params, null, 2));
+
+          d3.select(this).datum(state.params).call(header);
+
+          //var pre = d3.select(this).selectAll("pre").data([1]);
+          //pre = pre.merge(pre.enter().append("pre"));
+          //pre.text(JSON.stringify(state.params, null, 2));
         }
       });
     };
@@ -220,38 +223,41 @@
   }
 
 
+  // User interface component for the header text (top left).
+  function Header(){
+    return function (selection){
+      selection.each(function (params){
+        var headerEnter = d3.select(this).selectAll(".header").data([1])
+          .enter().append("div").attr("class", "header");
+        headerEnter.append("div").attr("class", "header-breadcrumbs"),
+        headerEnter.append("div").attr("class", "header-title");
+
+        d3.select(".header-breadcrumbs")
+          .text([
+            "Unit " + params.unit,
+            "Module " + params.module,
+            "Example " + params.example
+          ].join(" / "));
+
+        // TODO get the html content here.
+        //d3.select(".header-title")
+        //  .text(html.match(/title>(.*?)</)[1]);
+
+      });
+    }
+  }
+
+
   // Translates global keyboard events into dispatched actions.
   function Keyboard(store, actions){
     window.addEventListener("keydown", function (e){
-
       var CTRL = e.ctrlKey,
           S = e.which === 83,
           RIGHT = e.which === 39,
           LEFT = e.which === 37;
-
       if(CTRL && S){ store.dispatch(actions.save()); e.preventDefault(); }
       if(CTRL && RIGHT){ store.dispatch(actions.next()); }
       if(CTRL && LEFT){ store.dispatch(actions.previous()); }
-    });
-  }
-
-
-  // User interface component for the header text (top left).
-  function Header(store, selection){
-    var header = selection.append("div").attr("class", "header"),
-        breadcrumbs = header.append("div").attr("class", "header-breadcrumbs"),
-        title = header.append("div").attr("class", "header-title");
-
-    store.dispatch.on("navigated.header", function (params){
-      breadcrumbs.text([
-        "Unit " + params.unit,
-        "Module " + params.module,
-        "Example " + params.example
-      ].join(" / "));
-    });
-
-    store.dispatch.on("htmlChange.header", function (html){
-      title.text(html.match(/title>(.*?)</)[1]);
     });
   }
 
