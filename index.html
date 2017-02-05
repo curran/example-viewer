@@ -66,7 +66,6 @@
         top: 0px;
         right: 0px;
         background-color: white;
-        z-index: 3; /* CodeMirror's z-index is 2. */
       }
 
       .overlay {
@@ -307,10 +306,38 @@
 
   // User interface component for the running example (top right).
   function Runner(){
-    var previousHtml = "";
+    var previousHtml = "",
+        currentHtml = "",
+        BACK = 3, // CodeMirror's z-index is 2, this will be above that.
+        FRONT = 4,
+        buffers = [BACK, FRONT],
+        root,
+        iframe,
+        needsSwap = false;
+
+    setInterval(function (){
+      if(iframe){
+        if(needsSwap){
+          buffers = buffers.reverse();
+          root.selectAll(".runner").data(buffers)
+            .style("z-index", function (z) { return z; });
+          needsSwap = false;
+        }
+        if(currentHtml !== previousHtml){
+          previousHtml = currentHtml;
+          iframe
+            .filter(function (z){ return z === BACK; })
+            .attr("srcdoc", currentHtml);
+          needsSwap = true;
+        }
+      }
+    }, 100);
+
     return function (selection){
       selection.each(function (state){
-        var iframe = d3.select(this).selectAll(".runner").data([1]);
+
+        root = d3.select(this);
+        iframe = root.selectAll(".runner").data(buffers);
         iframe = iframe.merge(iframe.enter().append("iframe")
           .attr("class", "shadow runner")
           .attr("width", "960") // 960 X 500 is standard for bl.ocks.org.
@@ -320,10 +347,7 @@
           .attr("frameborder", "0px")
           .attr("scrolling", "no"));
 
-        if(state.html !== previousHtml){
-          iframe.attr("srcdoc", state.html);
-          previousHtml = state.html;
-        }
+        currentHtml = state.html;
       });
     };
   }
