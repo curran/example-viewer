@@ -309,14 +309,14 @@
     var previousHtml = "",
         currentHtml = "",
         BACK = 3, // CodeMirror's z-index is 2, this will be above that.
-        FRONT = 4,
+        FRONT = 4, // This is for the "front buffer", visible to the user.
         buffers = [BACK, FRONT],
         root,
-        iframe,
-        needsSwap = false;
+        needsSwap = false,
+        framesPerSecond = 10; // Seems to be the fastest rate without flicker.
 
     setInterval(function (){
-      if(iframe){
+      if(root){
         if(needsSwap){
           buffers = buffers.reverse();
           root.selectAll(".runner").data(buffers)
@@ -325,28 +325,26 @@
         }
         if(currentHtml !== previousHtml){
           previousHtml = currentHtml;
-          iframe
+          root.selectAll(".runner")
             .filter(function (z){ return z === BACK; })
             .attr("srcdoc", currentHtml);
           needsSwap = true;
         }
       }
-    }, 100);
+    }, 1000 / framesPerSecond);
 
     return function (selection){
       selection.each(function (state){
-
         root = d3.select(this);
-        iframe = root.selectAll(".runner").data(buffers);
-        iframe = iframe.merge(iframe.enter().append("iframe")
-          .attr("class", "shadow runner")
-          .attr("width", "960") // 960 X 500 is standard for bl.ocks.org.
-          .attr("height", "500")
-          .attr("marginwidth", "0") // Have no margin to match with bl.ocks.org.
-          .attr("marginheight", "0")
-          .attr("frameborder", "0px")
-          .attr("scrolling", "no"));
-
+        root.selectAll(".runner").data(buffers)
+          .enter().append("iframe")
+            .attr("class", "shadow runner")
+            .attr("width", "960") // 960 X 500 is standard for bl.ocks.org.
+            .attr("height", "500")
+            .attr("marginwidth", "0") // Have no margin to match with bl.ocks.org.
+            .attr("marginheight", "0")
+            .attr("frameborder", "0px")
+            .attr("scrolling", "no");
         currentHtml = state.html;
       });
     };
