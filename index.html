@@ -161,7 +161,7 @@
     var store = Redux.createStore(reducer, Redux.applyMiddleware(ReduxThunk.default));
 
     // Smart components.
-    var router = Router(store, actions),
+    var router = Router(store.dispatch, actions),
         editor = Editor(store, actions),
         keyboard = Keyboard(store, actions);
 
@@ -172,22 +172,23 @@
 
     // Respond to changes in state.
     store.subscribe(function (){
+      var state = store.getState();
 
       // Render user interface components.
-      d3.select("body").datum(store.getState())
+      d3.select("body").datum(state)
         .call(header)
         .call(editor)
         .call(runner)
         .call(notifier);
 
       // Update the route if a navigation occurred.
-      router();
+      router(state);
     });
   }());
 
 
   // Deals with the route, kept in the fragment identifier.
-  function Router(store, actions){
+  function Router(dispatch, actions){
     var defaultParams = { unit: 1, module: 1, example: 1 };
 
     navigate();
@@ -195,8 +196,8 @@
     function navigate(){
       var params = parseHash();
       if(params){
-        store.dispatch(actions.navigated(params));
-        store.dispatch(actions.fetchHtml());
+        dispatch(actions.navigated(params));
+        dispatch(actions.fetchHtml());
       } else {
         location.hash = encodeHash(defaultParams);
       }
@@ -214,8 +215,8 @@
       return "#" + params.unit + "/" + params.module + "/" + params.example;
     }
 
-    return function (){
-      var newHash = encodeHash(store.getState().params);
+    return function (state){
+      var newHash = encodeHash(state.params);
       if(location.hash != newHash){
         location.hash = newHash;
       }
