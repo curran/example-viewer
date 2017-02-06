@@ -179,7 +179,7 @@
 
       // Render user interface components.
       d3.select("body").datum(state)
-        .call(header)
+        .call(header, state)
         .call(editor, state)
         .call(runner)
         .call(notifier);
@@ -227,28 +227,26 @@
 
   // User interface component for the header text (top left).
   function Header(){
-    return function (selection){
-      selection.each(function (state){
-        var header = d3.select(this).selectAll(".header").data([1]);
-        var headerEnter = header.enter().append("div").attr("class", "header");
-        headerEnter.append("div").attr("class", "header-breadcrumbs");
-        headerEnter.append("div").attr("class", "header-title");
-        header = header.merge(headerEnter);
+    return function (selection, state){
+      var header = selection.selectAll(".header").data([1]);
+      var headerEnter = header.enter().append("div").attr("class", "header");
+      headerEnter.append("div").attr("class", "header-breadcrumbs");
+      headerEnter.append("div").attr("class", "header-title");
+      header = header.merge(headerEnter);
 
-        if(state.params){
-          header.select(".header-breadcrumbs")
-            .text([
-              "Unit " + state.params.unit,
-              "Module " + state.params.module,
-              "Example " + state.params.example
-            ].join(" / "));
-        }
+      if(state.params){
+        header.select(".header-breadcrumbs")
+          .text([
+            "Unit " + state.params.unit,
+            "Module " + state.params.module,
+            "Example " + state.params.example
+          ].join(" / "));
+      }
 
-        if(state.html){
-          header.select(".header-title")
-            .text(state.html.match(/title>(.*?)</)[1]);
-        }
-      });
+      if(state.html){
+        header.select(".header-title")
+          .text(state.html.match(/title>(.*?)</)[1]);
+      }
     }
   }
 
