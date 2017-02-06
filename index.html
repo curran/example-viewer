@@ -181,7 +181,7 @@
       d3.select("body").datum(state)
         .call(header, state)
         .call(editor, state)
-        .call(runner)
+        .call(runner, state)
         .call(notifier);
 
     });
@@ -331,20 +331,18 @@
       }
     }, 1000 / framesPerSecond);
 
-    return function (selection){
-      selection.each(function (state){
-        root = d3.select(this);
-        root.selectAll(".runner").data(buffers)
-          .enter().append("iframe")
-            .attr("class", "shadow runner")
-            .attr("width", "960") // 960 X 500 is standard for bl.ocks.org.
-            .attr("height", "500")
-            .attr("marginwidth", "0") // Have no margin to match with bl.ocks.org.
-            .attr("marginheight", "0")
-            .attr("frameborder", "0px")
-            .attr("scrolling", "no");
-        currentHtml = state.html;
-      });
+    return function (selection, state){
+      root = selection;
+      root.selectAll(".runner").data(buffers)
+        .enter().append("iframe")
+          .attr("class", "shadow runner")
+          .attr("width", "960") // 960 X 500 is standard for bl.ocks.org.
+          .attr("height", "500")
+          .attr("marginwidth", "0") // Have no margin to match with bl.ocks.org.
+          .attr("marginheight", "0")
+          .attr("frameborder", "0px")
+          .attr("scrolling", "no");
+      currentHtml = state.html;
     };
   }
 
