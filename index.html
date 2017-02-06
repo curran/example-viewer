@@ -87,28 +87,7 @@
   (function main(){
 
     var actions = Actions();
-
-    // The Redux reducer.
-    var reducer = function (state, action){
-      state = state || {};
-      switch (action.type) {
-        case "NAVIGATED": return Object.assign(state, { params: action.params });
-        case "CHANGE_HTML": return Object.assign(state, { html: action.html });
-        case "NEXT": return go(state, 1);
-        case "PREVIOUS": return go(state, -1);
-        case "SAVED": return Object.assign(state, { notify: action });
-        default: return state;
-      }
-    }
-
-    // Goes to the next or previous state (used in reducer).
-    function go(state, increment){
-      return Object.assign(state, {
-        params: Object.assign(state.params, {
-          example: state.params.example + increment
-        })
-      });
-    }
+    var reducer = Reducer();
 
     // The Redux store, with thunk middleware.
     var store = Redux.createStore(reducer, Redux.applyMiddleware(ReduxThunk.default));
@@ -184,6 +163,32 @@
       }
     };
     return actions;
+  }
+
+
+  // The Redux reducer.
+  function Reducer(){
+
+    // Goes to the next or previous example.
+    function go(state, increment){
+      return Object.assign(state, {
+        params: Object.assign(state.params, {
+          example: state.params.example + increment
+        })
+      });
+    }
+
+    return function (state, action){
+      state = state || {};
+      switch (action.type) {
+        case "NAVIGATED": return Object.assign(state, { params: action.params });
+        case "CHANGE_HTML": return Object.assign(state, { html: action.html });
+        case "NEXT": return go(state, 1);
+        case "PREVIOUS": return go(state, -1);
+        case "SAVED": return Object.assign(state, { notify: action });
+        default: return state;
+      }
+    };
   }
 
 
