@@ -86,7 +86,56 @@
 
   (function main(){
 
-    // Redux actions.
+    var actions = Actions();
+
+    // The Redux reducer.
+    var reducer = function (state, action){
+      state = state || {};
+      switch (action.type) {
+        case "NAVIGATED": return Object.assign(state, { params: action.params });
+        case "CHANGE_HTML": return Object.assign(state, { html: action.html });
+        case "NEXT": return go(state, 1);
+        case "PREVIOUS": return go(state, -1);
+        case "SAVED": return Object.assign(state, { notify: action });
+        default: return state;
+      }
+    }
+
+    // Goes to the next or previous state (used in reducer).
+    function go(state, increment){
+      return Object.assign(state, {
+        params: Object.assign(state.params, {
+          example: state.params.example + increment
+        })
+      });
+    }
+
+    // The Redux store, with thunk middleware.
+    var store = Redux.createStore(reducer, Redux.applyMiddleware(ReduxThunk.default));
+
+    // Application components.
+    var router = Router(store.dispatch, actions),
+        editor = Editor(store.dispatch, actions),
+        header = Header(),
+        runner = Runner(),
+        notifier = Notifier();
+    Keyboard(store.dispatch, actions);
+
+    // Re-render the application when state changes.
+    store.subscribe(function (){
+      var state = store.getState();
+      d3.select("body")
+        .call(header, state)
+        .call(editor, state)
+        .call(runner, state)
+        .call(notifier, state);
+      router(state);
+    });
+  }());
+
+
+  // Redux action creators.
+  function Actions(){
     var actions = {
 
       // After navigation occurred (after a route change).
@@ -134,51 +183,8 @@
         return { type: "SAVED", message: message, time: Date.now() };
       }
     };
-
-    // The Redux reducer.
-    var reducer = function (state, action){
-      state = state || {};
-      switch (action.type) {
-        case "NAVIGATED": return Object.assign(state, { params: action.params });
-        case "CHANGE_HTML": return Object.assign(state, { html: action.html });
-        case "NEXT": return go(state, 1);
-        case "PREVIOUS": return go(state, -1);
-        case "SAVED": return Object.assign(state, { notify: action });
-        default: return state;
-      }
-    }
-
-    // Goes to the next or previous state (used in reducer).
-    function go(state, increment){
-      return Object.assign(state, {
-        params: Object.assign(state.params, {
-          example: state.params.example + increment
-        })
-      });
-    }
-
-    // The Redux store.
-    var store = Redux.createStore(reducer, Redux.applyMiddleware(ReduxThunk.default));
-
-    // Application components.
-    var router = Router(store.dispatch, actions),
-        editor = Editor(store.dispatch, actions),
-        keyboard = Keyboard(store.dispatch, actions),
-        header = Header(),
-        runner = Runner(),
-        notifier = Notifier();
-
-    // Respond to changes in state.
-    store.subscribe(function (){
-      var state = store.getState();
-      router(state);
-      d3.select("body")
-        .call(header, state)
-        .call(editor, state)
-        .call(runner, state)
-        .call(notifier, state);
-    });
-  }());
+    return actions;
+  }
 
 
   // Deals with the route, kept in the fragment identifier.
