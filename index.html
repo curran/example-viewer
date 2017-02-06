@@ -160,29 +160,30 @@
     // The Redux store.
     var store = Redux.createStore(reducer, Redux.applyMiddleware(ReduxThunk.default));
 
-    // Smart components.
+    // Application components.
     var router = Router(store.dispatch, actions),
-        editor = Editor(store, actions),
-        keyboard = Keyboard(store, actions);
-
-    // Dumb components.
-    var header = Header(),
+        editor = Editor(store.dispatch, actions),
+        keyboard = Keyboard(store, actions),
+        header = Header(),
         runner = Runner(),
         notifier = Notifier();
 
     // Respond to changes in state.
     store.subscribe(function (){
+
+      // Get the current state.
       var state = store.getState();
+
+      // Update the route if a navigation occurred.
+      router(state);
 
       // Render user interface components.
       d3.select("body").datum(state)
         .call(header)
-        .call(editor)
+        .call(editor, state)
         .call(runner)
         .call(notifier);
 
-      // Update the route if a navigation occurred.
-      router(state);
     });
   }());
 
@@ -253,40 +254,38 @@
 
 
   // User interface component for the code editor.
-  function Editor(store, actions){
+  function Editor(dispatch, actions){
     var codemirror = d3.local();
-    return function (selection){
-      selection.each(function (state){
-        var editor = d3.select(this).selectAll(".editor").data([1]);
-        editor = editor.merge(
-          editor.enter().append("div")
-            .attr("class", "editor shadow")
-            .each(function (){
-              var cm = CodeMirror(this, {
-                lineNumbers: false,
-                mode: "htmlmixed"
-              });
+    return function (selection, state){
+      var editor = selection.selectAll(".editor").data([1]);
+      editor = editor.merge(
+        editor.enter().append("div")
+          .attr("class", "editor shadow")
+          .each(function (){
+            var cm = CodeMirror(this, {
+              lineNumbers: false,
+              mode: "htmlmixed"
+            });
 
-              // Inlet provides the interactive sliders and color pickers.
-              Inlet(cm);
+            // Inlet provides the interactive sliders and color pickers.
+            Inlet(cm);
 
-              cm.on("change", function (editor, change){
-                if(change.origin === "setValue") return;
-                store.dispatch(actions.changeHtml(cm.getValue()));
-              });
+            cm.on("change", function (editor, change){
+              if(change.origin === "setValue") return;
+              dispatch(actions.changeHtml(cm.getValue()));
+            });
 
-              codemirror.set(this, cm);
-            }));
+            codemirror.set(this, cm);
+          }));
 
-        if(state.html){
-          editor.each(function (){
-            var cm = codemirror.get(this);
-            if(cm.getValue() !== state.html){
-              cm.setValue(state.html);
-            }
-          });
-        }
-      });
+      if(state.html){
+        editor.each(function (){
+          var cm = codemirror.get(this);
+          if(cm.getValue() !== state.html){
+            cm.setValue(state.html);
+          }
+        });
+      }
     };
   }
 
