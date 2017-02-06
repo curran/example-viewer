@@ -170,20 +170,13 @@
 
     // Respond to changes in state.
     store.subscribe(function (){
-
-      // Get the current state.
       var state = store.getState();
-
-      // Update the route if a navigation occurred.
       router(state);
-
-      // Render user interface components.
       d3.select("body")
         .call(header, state)
         .call(editor, state)
         .call(runner, state)
         .call(notifier, state);
-
     });
   }());
 
