@@ -163,7 +163,7 @@
     // Application components.
     var router = Router(store.dispatch, actions),
         editor = Editor(store.dispatch, actions),
-        keyboard = Keyboard(store, actions),
+        keyboard = Keyboard(store.dispatch, actions),
         header = Header(),
         runner = Runner(),
         notifier = Notifier();
@@ -291,15 +291,15 @@
 
 
   // Translates global keyboard events into dispatched actions.
-  function Keyboard(store, actions){
+  function Keyboard(dispatch, actions){
     window.addEventListener("keydown", function (e){
       var CTRL = e.ctrlKey,
           S = e.which === 83,
           RIGHT = e.which === 39,
           LEFT = e.which === 37;
-      if(CTRL && S){ store.dispatch(actions.save()); e.preventDefault(); }
-      if(CTRL && RIGHT){ store.dispatch(actions.next()); }
-      if(CTRL && LEFT){ store.dispatch(actions.previous()); }
+      if(CTRL && S){ dispatch(actions.save()); e.preventDefault(); }
+      if(CTRL && RIGHT){ dispatch(actions.next()); }
+      if(CTRL && LEFT){ dispatch(actions.previous()); }
     });
   }
 
