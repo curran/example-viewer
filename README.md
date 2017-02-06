@@ -1,7 +1,7 @@
 # example-viewer
 A presentation tool for code examples.
 
-[Try it out!](https://curran.github.io/example-viewer/#1/1/3)
+#[Try it out!](https://curran.github.io/example-viewer/#1/1/3)
 
  * CTRL + Right/Left arrow keys to navigate between examples.
  * Live code editing environment with instant feedback.
