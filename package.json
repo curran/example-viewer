@@ -1,6 +1,6 @@
 {
   "name": "example-viewer",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A presentation tool for code examples.",
   "main": "index.js",
   "bin": "./cli.js",
