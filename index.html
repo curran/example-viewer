@@ -216,7 +216,7 @@
         notify: {
           message: FORWARD ? "→" : "←",
           position: FORWARD ? 0.75 : 0.25,
-          size: 50,
+          size: 80,
           time: Date.now()
         }
       });
@@ -403,36 +403,24 @@
             position = state.notify.position || 0.5,
             size = state.notify.size || 20;
 
-        // Update the size of the SVG to fill the page.
-        svg
-            .attr("width", width)
-            .attr("height", height);
+        svg.attr("width", width).attr("height", height);
 
-        // The background white overlay rectangle.
-        svg
-          .append("rect")
-            .attr("width", width)
-            .attr("height", height)
-            .attr("fill", "white")
-            .attr("fill-opacity", 1)
-          .transition().duration(1200)
-            .attr("fill-opacity", 0)
-            .remove();
-
-        // The foreground notification text.
-        svg
-          .append("text")
-            .attr("x", width * position)
-            .attr("y", height / 2)
+        var text = svg.selectAll("text").data([1]);
+        text
+          .enter().append("text")
+            .style("text-shadow", "0px 0px 10px white")
             .attr("text-anchor", "middle")
             .attr("alignment-baseline", "middle")
+          .merge(text)
+            .interrupt("pop")
+            .attr("x", width * position)
+            .attr("y", height / 2)
             .attr("font-size", size + "em")
             .attr("opacity", 1)
             .text(state.notify.message)
-          .transition().duration(700).ease(d3.easeLinear)
+          .transition("pop").duration(700).ease(d3.easeLinear)
             .attr("font-size", (size * 1.2) + "em")
-            .attr("opacity", 0)
-            .remove();
+            .attr("opacity", 0);
 
         previousTime = state.notify.time;
       }
