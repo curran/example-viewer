@@ -208,10 +208,17 @@
 
     // Goes to the next or previous example.
     function go(state, increment){
+      var FORWARD = increment === 1;
       return Object.assign(state, {
         params: Object.assign(state.params, {
           example: state.params.example + increment
-        })
+        }),
+        notify: {
+          message: FORWARD ? "→" : "←",
+          position: FORWARD ? 0.75 : 0.25,
+          size: 50,
+          time: Date.now()
+        }
       });
     }
   }
@@ -387,25 +394,43 @@
         .enter().append("div").attr("class", "overlay")
         .append("svg");
 
+      // Trigger the notification based on a changed timestamp.
       if(state.notify && state.notify.time !== previousTime){
         var div = selection.select(".overlay").node(),
+            svg = d3.select(div).select("svg"),
             width = div.clientWidth,
-            height = div.clientHeight;
+            height = div.clientHeight,
+            position = state.notify.position || 0.5,
+            size = state.notify.size || 20;
 
-        d3.select(div).select("svg")
+        // Update the size of the SVG to fill the page.
+        svg
+            .attr("width", width)
+            .attr("height", height);
+
+        // The background white overlay rectangle.
+        svg
+          .append("rect")
             .attr("width", width)
             .attr("height", height)
+            .attr("fill", "white")
+            .attr("fill-opacity", 1)
+          .transition().duration(1200)
+            .attr("fill-opacity", 0)
+            .remove();
+
+        // The foreground notification text.
+        svg
           .append("text")
-            .attr("x", width / 2)
+            .attr("x", width * position)
             .attr("y", height / 2)
             .attr("text-anchor", "middle")
             .attr("alignment-baseline", "middle")
-            .style("text-shadow", "0px 0px 5px white")
-            .attr("font-size", "20em")
+            .attr("font-size", size + "em")
             .attr("opacity", 1)
             .text(state.notify.message)
           .transition().duration(700).ease(d3.easeLinear)
-            .attr("font-size", "23em")
+            .attr("font-size", (size * 1.2) + "em")
             .attr("opacity", 0)
             .remove();
 
