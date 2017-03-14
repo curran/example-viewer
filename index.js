@@ -37,7 +37,21 @@ app.post("/save", function (req, res){
 
 // Updates index.json
 function updateIndexJSON(){
-  console.log(fs.readdirSync("units"));
+  var json = { units: listUnits() },
+      jsonStr = JSON.stringify(json, null, 2);
+  fs.writeFile("index.json", jsonStr, function(err) {
+    if (err) return console.error(err);
+    console.log("Updated index.json");
+  });
+}
+
+function listUnits(){
+  var units = fs.readdirSync("units");
+  return units.map(function (unit){
+    return {
+      name: unit
+    };
+  });
 }
 
 app.listen(3000, function () {
