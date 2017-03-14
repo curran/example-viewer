@@ -153,7 +153,9 @@
       previous: function (){ return { type: "PREVIOUS" }; },
 
       // When the HTML content is changed.
-      changeHtml: function (html){ return { type: "CHANGE_HTML", html: html}; },
+      changeHtml: function (html){
+        return { type: "CHANGE_HTML", html: html };
+      },
 
       // Fetches the HTML content from the server (uses thunk middleware).
       fetchHtml: function (){

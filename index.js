@@ -31,7 +31,14 @@ app.post("/save", function (req, res){
       res.send("Saved!");
     });
   });
+
+  updateIndexJSON();
 });
+
+// Updates index.json
+function updateIndexJSON(){
+  console.log(fs.readdirSync("units"));
+}
 
 app.listen(3000, function () {
   console.log("Listening at http://localhost:3000");
