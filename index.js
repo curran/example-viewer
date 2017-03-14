@@ -59,7 +59,17 @@ function listModules(unit){
   var modules = fs.readdirSync("units/" + unit);
   return modules.map(function (module){
     return {
-      name: module
+      name: module,
+      examples: listExamples(unit, module)
+    };
+  });
+}
+
+function listExamples(unit, module){
+  var examples = fs.readdirSync("units/" + unit + "/" + module);
+  return examples.map(function (example){
+    return {
+      name: example
     };
   });
 }

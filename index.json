@@ -4,7 +4,21 @@
       "name": "unit-1",
       "modules": [
         {
-          "name": "module-1"
+          "name": "module-1",
+          "examples": [
+            {
+              "name": "example-1"
+            },
+            {
+              "name": "example-2"
+            },
+            {
+              "name": "example-3"
+            },
+            {
+              "name": "example-4"
+            }
+          ]
         }
       ]
     }
