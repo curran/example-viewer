@@ -1,0 +1,38 @@
+{
+  "units": [
+    {
+      "name": "unit-1",
+      "modules": [
+        {
+          "name": "module-1",
+          "examples": [
+            {
+              "name": "example-1",
+              "files": [
+                "index.html"
+              ]
+            },
+            {
+              "name": "example-2",
+              "files": [
+                "index.html"
+              ]
+            },
+            {
+              "name": "example-3",
+              "files": [
+                "index.html"
+              ]
+            },
+            {
+              "name": "example-4",
+              "files": [
+                "index.html"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
