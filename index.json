@@ -7,16 +7,28 @@
           "name": "module-1",
           "examples": [
             {
-              "name": "example-1"
+              "name": "example-1",
+              "files": [
+                "index.html"
+              ]
             },
             {
-              "name": "example-2"
+              "name": "example-2",
+              "files": [
+                "index.html"
+              ]
             },
             {
-              "name": "example-3"
+              "name": "example-3",
+              "files": [
+                "index.html"
+              ]
             },
             {
-              "name": "example-4"
+              "name": "example-4",
+              "files": [
+                "index.html"
+              ]
             }
           ]
         }

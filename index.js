@@ -69,9 +69,14 @@ function listExamples(unit, module){
   var examples = fs.readdirSync("units/" + unit + "/" + module);
   return examples.map(function (example){
     return {
-      name: example
+      name: example,
+      files: listFiles(unit, module, example)
     };
   });
+}
+
+function listFiles(unit, module, example){
+  return fs.readdirSync("units/" + unit + "/" + module + "/" + example);
 }
 
 app.listen(3000, function () {
