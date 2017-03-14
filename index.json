@@ -1,7 +1,12 @@
 {
   "units": [
     {
-      "name": "unit-1"
+      "name": "unit-1",
+      "modules": [
+        {
+          "name": "module-1"
+        }
+      ]
     }
   ]
 }

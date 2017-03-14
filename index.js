@@ -49,7 +49,17 @@ function listUnits(){
   var units = fs.readdirSync("units");
   return units.map(function (unit){
     return {
-      name: unit
+      name: unit,
+      modules: listModules(unit)
+    };
+  });
+}
+
+function listModules(unit){
+  var modules = fs.readdirSync("units/" + unit);
+  return modules.map(function (module){
+    return {
+      name: module
     };
   });
 }
