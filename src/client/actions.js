@@ -1,4 +1,4 @@
-import { json } from "d3-request";
+import { json, request } from "d3-request";
 import get from "lodash-es/get";
 
 // Redux action creators.
@@ -42,6 +42,7 @@ export function navigate(params){
   };
 };
 
+// See redux.js.org/docs/advanced/AsyncActions.html
 //function fetchFilesIfNeeded(params){
 //  return function (dispatch, getState){
 //    if(shouldFetchFiles(getState(), params)){
@@ -60,7 +61,6 @@ function fetchFiles(params){
     const { index, params } = getState();
     if(index && params){
       getFiles(index, params).forEach(function (file){
-        console.log(params, file);
         dispatch(fetchFile(params, file.name));
       });
     }
@@ -77,7 +77,28 @@ function getFiles(index, params){
   ]);
 }
 
-function fetchFile(params, file){
+function fetchFile(params, filename){
+  return function (dispatch, getState){
+    var url = [
+      "units",
+      "unit-" + params.unit,
+      "module-" + params.module,
+      "example-" + params.example,
+      filename
+    ].join("/");
+    d3.request(url).get(function (xhr){
+      dispatch(receiveFile(params, filename, xhr.responseText));;
+    });
+  };
+};
+
+function receiveFile(params, filename, content){
+  console.log(arguments);
+  return {
+    type: "RECEIVE_FILE",
+    params: params,
+    content: content
+  };
 }
 
 //
