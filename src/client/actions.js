@@ -1,17 +1,23 @@
 import { json } from "d3-request";
 
 // Redux action creators.
-export default {
 
-  // Fetches index.json from the server (uses thunk middleware).
-  fetchIndex: function (){
-    return function (dispatch, getState){
-      json("index.json", function (data){
-        console.log(data);
-        //dispatch(actions.changeHtml(xhr.responseText));;
-      });
-    }
+// Fetches index.json from the server (uses thunk middleware).
+export function fetchIndex(){
+  return function (dispatch, getState){
+    json("index.json", function (data){
+      dispatch(receiveIndex(data));;
+    });
   }
+};
+
+// After the index was fetched.
+export function receiveIndex(data){
+  return {
+    type: "RECEIVE_INDEX",
+    data: data
+  };
+};
 
 //  // After navigation occurred (after a route change).
 //  navigated: function (params){ return { type: "NAVIGATED", params: params }; },
@@ -59,4 +65,4 @@ export default {
 //  saved: function (message){
 //    return { type: "SAVED", message: message, time: Date.now() };
 //  }
-};
+

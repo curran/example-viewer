@@ -2,6 +2,11 @@
 export default function (state, action){
   state = state || {};
   switch (action.type) {
+    case "RECEIVE_INDEX":
+      return Object.assign(state, {
+        units: action.data.units
+      });
+
 //    case "NAVIGATED":
 //      return Object.assign(state, {
 //        params: action.params

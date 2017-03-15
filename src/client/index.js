@@ -2,7 +2,7 @@ import { selection, select, selectAll } from "d3-selection";
 import "d3-transition";
 import { createStore, applyMiddleware } from "redux";
 import thunk from "redux-thunk";
-import actions from "./actions";
+import { fetchIndex } from "./actions";
 import reducer from "./reducer";
 
 // Set up Redux.
@@ -29,7 +29,7 @@ store.subscribe(function (){
 });
 
 // Kick off the application by fetching the index.json data.
-store.dispatch(actions.fetchIndex());
+store.dispatch(fetchIndex());
 
 //(function (){
 //
