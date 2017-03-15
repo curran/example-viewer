@@ -2,15 +2,19 @@
 export default function (state, action){
   state = state || {};
   switch (action.type) {
+    case "REQUEST_INDEX":
+      return Object.assign(state, {
+        indexFetching: true
+      });
     case "RECEIVE_INDEX":
       return Object.assign(state, {
-        units: action.data.units
+        indexFetching: false,
+        index: action.data
       });
-
-//    case "NAVIGATED":
-//      return Object.assign(state, {
-//        params: action.params
-//      });
+    case "NAVIGATED":
+      return Object.assign(state, {
+        params: action.params
+      });
 //    case "CHANGE_HTML":
 //      return Object.assign(state, {
 //        html: action.html

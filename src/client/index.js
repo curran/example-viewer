@@ -4,12 +4,13 @@ import { createStore, applyMiddleware } from "redux";
 import thunk from "redux-thunk";
 import { fetchIndex } from "./actions";
 import reducer from "./reducer";
+import Router from "./router";
 
 // Set up Redux.
 var store = createStore(reducer, applyMiddleware(thunk));
 
 // Initialize application components.
-//var router = Router(store.dispatch, actions),
+var router = Router(store.dispatch);//, actions),
 //    editor = Editor(store.dispatch, actions),
 //    header = Header(),
 //    runner = Runner(),
@@ -25,7 +26,7 @@ store.subscribe(function (){
   //  .call(editor, state)
   //  .call(runner, state)
   //  .call(notifier, state);
-  //router(state);
+  router(state);
 });
 
 // Kick off the application by fetching the index.json data.
@@ -42,41 +43,6 @@ store.dispatch(fetchIndex());
 //
 //
 //
-//  // Deals with the route, kept in the fragment identifier.
-//  function Router(dispatch, actions){
-//    var defaultParams = { unit: 1, module: 1, example: 1 };
-//
-//    navigate();
-//    window.addEventListener("hashchange", navigate);
-//    function navigate(){
-//      var params = parseHash();
-//      if(params){
-//        dispatch(actions.navigated(params));
-//        dispatch(actions.fetchHtml());
-//      } else {
-//        location.hash = encodeHash(defaultParams);
-//      }
-//    }
-//
-//    function parseHash(){
-//      var path = location.hash.substr(1).split("/");
-//      if(path.length === 3){
-//        return { unit: +path[0], module: +path[1], example: +path[2] };
-//      }
-//      return null;
-//    }
-//
-//    function encodeHash(params){
-//      return "#" + params.unit + "/" + params.module + "/" + params.example;
-//    }
-//
-//    return function (state){
-//      var newHash = encodeHash(state.params);
-//      if(location.hash != newHash){
-//        location.hash = newHash;
-//      }
-//    }
-//  }
 //
 //
 //  // User interface component for the header text (top left).

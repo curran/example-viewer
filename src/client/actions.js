@@ -5,10 +5,16 @@ import { json } from "d3-request";
 // Fetches index.json from the server (uses thunk middleware).
 export function fetchIndex(){
   return function (dispatch, getState){
+    dispatch(requestIndex());
     json("index.json", function (data){
       dispatch(receiveIndex(data));;
     });
   }
+};
+
+// As the fetching begins (request gets sent off);
+export function requestIndex(){
+  return { type: "REQUEST_INDEX" };
 };
 
 // After the index was fetched.
@@ -19,8 +25,13 @@ export function receiveIndex(data){
   };
 };
 
-//  // After navigation occurred (after a route change).
-//  navigated: function (params){ return { type: "NAVIGATED", params: params }; },
+// After navigation occurred (after a route change).
+export function navigated(params){
+  return {
+    type: "NAVIGATED",
+    params: params
+  };
+};
 //
 //  // When the user wants to go to the next example.
 //  next: function (){ return { type: "NEXT" }; },
