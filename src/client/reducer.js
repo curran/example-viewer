@@ -11,9 +11,13 @@ export default function (state, action){
         indexFetching: false,
         index: action.data
       });
-    case "NAVIGATED":
+    case "NAVIGATE":
       return Object.assign(state, {
-        params: action.params
+        params: action.params || {
+          unit: 1,
+          module: 1,
+          example: 1
+        }
       });
 //    case "CHANGE_HTML":
 //      return Object.assign(state, {

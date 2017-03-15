@@ -25,10 +25,10 @@ export function receiveIndex(data){
   };
 };
 
-// After navigation occurred (after a route change).
-export function navigated(params){
+// Navigation between examples (route change).
+export function navigate(params){
   return {
-    type: "NAVIGATED",
+    type: "NAVIGATE",
     params: params
   };
 };

@@ -1,19 +1,15 @@
-import { navigated } from "./actions";
+import { navigate } from "./actions";
 
 // Deals with the route, kept in the fragment identifier.
 export default function Router(dispatch){
-  var defaultParams = { unit: 1, module: 1, example: 1 };
-
-  navigate();
-  window.addEventListener("hashchange", navigate);
-  function navigate(){
+  navigateFromHash();
+  window.addEventListener("hashchange", navigateFromHash);
+  function navigateFromHash(){
     var params = parseHash();
-    if(params){
-      dispatch(navigated(params));
-      //dispatch(fetchHtml());
-    } else {
-      location.hash = encodeHash(defaultParams);
-    }
+    dispatch(navigate(params));
+    //if(params){
+    //  dispatch(fetch());
+    //}
   }
 
   function parseHash(){
