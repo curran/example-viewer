@@ -2,3 +2,4 @@ node_modules
 *.swp
 libs
 npm-debug.log
+example-viewer-dist
