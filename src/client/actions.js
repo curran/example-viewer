@@ -99,6 +99,7 @@ function receiveFile(params, filename, content){
   return {
     type: "RECEIVE_FILE",
     params: params,
+    filename: filename,
     content: content
   };
 }
