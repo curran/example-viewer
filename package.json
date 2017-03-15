@@ -2,11 +2,11 @@
   "name": "example-viewer",
   "version": "0.2.1",
   "description": "A presentation tool for code examples.",
-  "main": "index.js",
+  "main": "src/server/index.js",
   "bin": "./cli.js",
   "scripts": {
     "start": "node src/server/index.js",
-    "build": "rollup -c",
+    "build": "rollup -c; cp ./src/css/styles.css ./example-viewer-dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -34,7 +34,10 @@
     "d3-selection": "^1.0.5",
     "d3-transition": "^1.0.4",
     "redux": "^3.6.0",
+    "redux-thunk": "^2.2.0",
     "rollup": "^0.41.5",
-    "rollup-plugin-node-resolve": "^2.0.0"
+    "rollup-plugin-babel": "^2.7.1",
+    "rollup-plugin-node-resolve": "^2.0.0",
+    "rollup-plugin-replace": "^1.1.1"
   }
 }

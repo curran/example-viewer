@@ -1,133 +1,45 @@
 import { selection, select, selectAll } from "d3-selection";
 import "d3-transition";
+import { createStore, applyMiddleware } from "redux";
+import thunk from "redux-thunk";
+import actions from "./actions";
+import reducer from "./reducer";
 
+// Set up Redux.
+var store = createStore(reducer, applyMiddleware(thunk));
 
-select("body").append("h1")
-    .text("Hello, world!")
-    .style("text-align", "center")
-    .style("line-height", "320px")
-    .style("font-size", "100px")
-    .style("transform", "rotate(-180deg) scale(0.001, 0.001)")
-  .transition()
-    .duration(1500)
-    .style("transform", null);
+// Initialize application components.
+//var router = Router(store.dispatch, actions),
+//    editor = Editor(store.dispatch, actions),
+//    header = Header(),
+//    runner = Runner(),
+//    notifier = Notifier();
+//Keyboard(store.dispatch, actions);
+
+// Re-render the application when state changes.
+store.subscribe(function (){
+  var state = store.getState();
+  console.log(state);
+  //d3.select("body")
+  //  .call(header, state)
+  //  .call(editor, state)
+  //  .call(runner, state)
+  //  .call(notifier, state);
+  //router(state);
+});
+
+console.log("Here");
+
 
 //(function (){
 //
 //  // The main entry point for the application.
 //  (function main(){
 //
-//    // Set up Redux.
-//    var actions = Actions(),
-//        reducer = Reducer(),
-//        store = Redux.createStore(reducer, Redux.applyMiddleware(ReduxThunk.default));
-//
-//    // Initialize application components.
-//    var router = Router(store.dispatch, actions),
-//        editor = Editor(store.dispatch, actions),
-//        header = Header(),
-//        runner = Runner(),
-//        notifier = Notifier();
-//    Keyboard(store.dispatch, actions);
-//
-//    // Re-render the application when state changes.
-//    store.subscribe(function (){
-//      var state = store.getState();
-//      d3.select("body")
-//        .call(header, state)
-//        .call(editor, state)
-//        .call(runner, state)
-//        .call(notifier, state);
-//      router(state);
-//    });
-//  }());
 //
 //
-//  // Redux action creators.
-//  function Actions(){
-//    var actions = {
-//
-//      // After navigation occurred (after a route change).
-//      navigated: function (params){ return { type: "NAVIGATED", params: params }; },
-//
-//      // When the user wants to go to the next example.
-//      next: function (){ return { type: "NEXT" }; },
-//
-//      // When the user wants to go to the previous example.
-//      previous: function (){ return { type: "PREVIOUS" }; },
-//
-//      // When the HTML content is changed.
-//      changeHtml: function (html){
-//        return { type: "CHANGE_HTML", html: html };
-//      },
-//
-//      // Fetches the HTML content from the server (uses thunk middleware).
-//      fetchHtml: function (){
-//        return function (dispatch, getState){
-//          var params = getState().params;
-//          var url = [
-//            "units",
-//            "unit-" + params.unit,
-//            "module-" + params.module,
-//            "example-" + params.example,
-//            "index.html"
-//          ].join("/");
-//          d3.request(url).get(function (xhr){
-//            dispatch(actions.changeHtml(xhr.responseText));;
-//          });
-//        }
-//      },
-//
-//      // Saves the HTML content to the server (uses thunk middleware).
-//      save: function (){
-//        return function (dispatch, getState){
-//          d3.request("save")
-//            .header("Content-Type", "application/json")
-//            .post(JSON.stringify(getState()), function (xhr){
-//              dispatch(actions.saved(xhr.responseText));
-//            });
-//        };
-//      },
-//      
-//      // After a save occurred.
-//      saved: function (message){
-//        return { type: "SAVED", message: message, time: Date.now() };
-//      }
-//    };
-//    return actions;
-//  }
 //
 //
-//  // The Redux reducer.
-//  function Reducer(){
-//    return function (state, action){
-//      state = state || {};
-//      switch (action.type) {
-//        case "NAVIGATED": return Object.assign(state, { params: action.params });
-//        case "CHANGE_HTML": return Object.assign(state, { html: action.html });
-//        case "NEXT": return go(state, 1);
-//        case "PREVIOUS": return go(state, -1);
-//        case "SAVED": return Object.assign(state, { notify: action });
-//        default: return state;
-//      }
-//    };
-//
-//    // Goes to the next or previous example.
-//    function go(state, increment){
-//      var FORWARD = increment === 1;
-//      return Object.assign(state, {
-//        params: Object.assign(state.params, {
-//          example: state.params.example + increment
-//        }),
-//        notify: {
-//          message: FORWARD ? "→" : "←",
-//          position: FORWARD ? 0.75 : 0.25,
-//          size: 80,
-//          time: Date.now()
-//        }
-//      });
-//    }
-//  }
 //
 //
 //  // Deals with the route, kept in the fragment identifier.
