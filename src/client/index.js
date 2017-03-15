@@ -28,8 +28,9 @@ store.subscribe(function (){
   //router(state);
 });
 
-console.log("Here");
 
+var state = store.getState();
+console.log(state);
 
 //(function (){
 //
