@@ -1,5 +1,17 @@
+import { json } from "d3-request";
+
 // Redux action creators.
 export default {
+
+  // Fetches index.json from the server (uses thunk middleware).
+  fetchIndex: function (){
+    return function (dispatch, getState){
+      json("index.json", function (data){
+        console.log(data);
+        //dispatch(actions.changeHtml(xhr.responseText));;
+      });
+    }
+  }
 
 //  // After navigation occurred (after a route change).
 //  navigated: function (params){ return { type: "NAVIGATED", params: params }; },

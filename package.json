@@ -31,6 +31,7 @@
   },
   "devDependencies": {
     "d3-component": "^2.2.0",
+    "d3-request": "^1.0.5",
     "d3-selection": "^1.0.5",
     "d3-transition": "^1.0.4",
     "redux": "^3.6.0",

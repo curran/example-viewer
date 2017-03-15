@@ -28,9 +28,8 @@ store.subscribe(function (){
   //router(state);
 });
 
-
-var state = store.getState();
-console.log(state);
+// Kick off the application by fetching the index.json data.
+store.dispatch(actions.fetchIndex());
 
 //(function (){
 //
