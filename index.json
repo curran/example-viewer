@@ -9,7 +9,9 @@
             {
               "name": "example-1",
               "files": [
-                "index.html"
+                {
+                  "name": "index.html"
+                }
               ]
             },
             {

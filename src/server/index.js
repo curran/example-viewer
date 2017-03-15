@@ -8,6 +8,7 @@ var bodyParser = require("body-parser");
 var fs = require("fs");
 var mkdirp = require("mkdirp");
 var path = require("path");
+var updateIndexJSON = require("./updateIndexJSON");
 var app = express();
 
 app.use(bodyParser.json());
@@ -34,50 +35,6 @@ app.post("/save", function (req, res){
 
   updateIndexJSON();
 });
-
-// Updates index.json
-function updateIndexJSON(){
-  var json = { units: listUnits() },
-      jsonStr = JSON.stringify(json, null, 2);
-  fs.writeFile("index.json", jsonStr, function(err) {
-    if (err) return console.error(err);
-    console.log("Updated index.json");
-  });
-}
-
-function listUnits(){
-  var units = fs.readdirSync("units");
-  return units.map(function (unit){
-    return {
-      name: unit,
-      modules: listModules(unit)
-    };
-  });
-}
-
-function listModules(unit){
-  var modules = fs.readdirSync("units/" + unit);
-  return modules.map(function (module){
-    return {
-      name: module,
-      examples: listExamples(unit, module)
-    };
-  });
-}
-
-function listExamples(unit, module){
-  var examples = fs.readdirSync("units/" + unit + "/" + module);
-  return examples.map(function (example){
-    return {
-      name: example,
-      files: listFiles(unit, module, example)
-    };
-  });
-}
-
-function listFiles(unit, module, example){
-  return fs.readdirSync("units/" + unit + "/" + module + "/" + example);
-}
 
 app.listen(3000, function () {
   console.log("Listening at http://localhost:3000");

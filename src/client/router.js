@@ -15,7 +15,11 @@ export default function Router(dispatch){
   function parseHash(){
     var path = location.hash.substr(1).split("/");
     if(path.length === 3){
-      return { unit: +path[0], module: +path[1], example: +path[2] };
+      return {
+        unit: +path[0],
+        module: +path[1],
+        example: +path[2]
+      };
     }
     return null;
   }

@@ -1,4 +1,5 @@
 import { json } from "d3-request";
+import get from "lodash-es/get";
 
 // Redux action creators.
 
@@ -9,7 +10,7 @@ export function fetchIndex(){
     json("index.json", function (data){
       dispatch(receiveIndex(data));;
     });
-  }
+  };
 };
 
 // As the fetching begins (request gets sent off);
@@ -19,19 +20,66 @@ export function requestIndex(){
 
 // After the index was fetched.
 export function receiveIndex(data){
-  return {
-    type: "RECEIVE_INDEX",
-    data: data
-  };
+  return function (dispatch){
+    dispatch({
+      type: "RECEIVE_INDEX",
+      data: data
+    });
+    //dispatch(fetchFilesIfNeeded(params));
+    dispatch(fetchFiles());
+  }
 };
 
 // Navigation between examples (route change).
 export function navigate(params){
-  return {
-    type: "NAVIGATE",
-    params: params
+  return function (dispatch){
+    dispatch({
+      type: "NAVIGATE",
+      params: params
+    });
+    //dispatch(fetchFilesIfNeeded(params));
+    dispatch(fetchFiles());
   };
 };
+
+//function fetchFilesIfNeeded(params){
+//  return function (dispatch, getState){
+//    if(shouldFetchFiles(getState(), params)){
+//      dispatch(fetchFiles(params));
+//    }
+//  };
+//};
+//
+//function shouldFetchFiles(state, params){
+//  return get(state, ["units", params.unit, params.module, params.example, "files"]);
+//}
+
+
+function fetchFiles(params){
+  return function (dispatch, getState){
+    const { index, params } = getState();
+    if(index && params){
+      getFiles(index, params).forEach(function (file){
+        console.log(params, file);
+        dispatch(fetchFile(params, file.name));
+      });
+    }
+  };
+}
+
+// Gets the listing of file entries for the current example.
+function getFiles(index, params){
+  return get(index, [
+    "units", params.unit - 1, // Use zero-based index.
+    "modules", params.module - 1,
+    "examples", params.example - 1,
+    "files"
+  ]);
+}
+
+function fetchFile(params, file){
+}
+
 //
 //  // When the user wants to go to the next example.
 //  next: function (){ return { type: "NEXT" }; },
