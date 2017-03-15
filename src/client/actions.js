@@ -1,5 +1,5 @@
 import { json, request } from "d3-request";
-import get from "lodash-es/get";
+import get from "lodash/get";
 
 // Redux action creators.
 
@@ -60,9 +60,12 @@ function fetchFiles(params){
   return function (dispatch, getState){
     const { index, params } = getState();
     if(index && params){
-      getFiles(index, params).forEach(function (file){
-        dispatch(fetchFile(params, file.name));
-      });
+      const files = getFiles(index, params);
+      if(files){
+        Object.keys(files).forEach(function (filename){
+          dispatch(fetchFile(params, filename));
+        });
+      }
     }
   };
 }
@@ -93,7 +96,6 @@ function fetchFile(params, filename){
 };
 
 function receiveFile(params, filename, content){
-  console.log(arguments);
   return {
     type: "RECEIVE_FILE",
     params: params,

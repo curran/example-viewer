@@ -1,3 +1,8 @@
+import set from "lodash/fp/set";
+
+console.log(set);
+window.set = set;
+
 // The Redux reducer.
 export default function (state, action){
   state = state || {};
@@ -19,6 +24,18 @@ export default function (state, action){
           example: 1
         }
       });
+    case "RECEIVE_FILE":
+      const path = [
+        "index",
+//        "units",
+//        "units", params.unit - 1, // Use zero-based index.
+//        "modules", params.module - 1,
+//        "examples", params.example - 1,
+//        "files"
+//
+      ];
+      const value = action.content;
+      return set(path, value, state);
 //    case "CHANGE_HTML":
 //      return Object.assign(state, {
 //        html: action.html

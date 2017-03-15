@@ -8,11 +8,9 @@
           "examples": [
             {
               "name": "example-1",
-              "files": [
-                {
-                  "name": "index.html"
-                }
-              ]
+              "files": {
+                "index.html": false
+              }
             },
             {
               "name": "example-2",
