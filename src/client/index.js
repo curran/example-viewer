@@ -4,14 +4,12 @@ import { createStore, applyMiddleware } from "redux";
 import thunk from "redux-thunk";
 import { fetchIndex } from "./actions";
 import reducer from "./reducer";
-import Router from "./router";
 import app from "./app";
 
 // Set up Redux.
 var store = createStore(reducer, applyMiddleware(thunk));
 
 // Initialize application components.
-var router = Router(store.dispatch);
 //    editor = Editor(store.dispatch, actions),
 //    runner = Runner(),
 //    notifier = Notifier();
@@ -19,9 +17,10 @@ var router = Router(store.dispatch);
 
 // Re-render the application when state changes.
 store.subscribe(function (){
-  const state = store.getState();
-  app(document.body, state);
-  router(state);
+  app(document.body, {
+    state: store.getState(),
+    dispatch: store.dispatch
+  })
 });
 
 // Kick off the application by fetching the index.json data.
