@@ -115,9 +115,14 @@ export function previous(){
 // Saves the HTML content to the server (uses thunk middleware).
 export function save(){
   return function (dispatch, getState){
+    const state = getState();
+    const payload = {
+      params: state.params,
+      files: getFiles(state)
+    };
     request("save")
       .header("Content-Type", "application/json")
-      .post(JSON.stringify(getState()), function (xhr){
+      .post(JSON.stringify(payload), function (xhr){
         console.log(xhr.responseText);
         //dispatch(actions.saved(xhr.responseText));
       });

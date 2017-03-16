@@ -15,23 +15,29 @@ app.use(bodyParser.json());
 app.use(express.static("."));
 
 app.post("/save", function (req, res){
-  var params = req.body.params,
-      html = req.body.html,
-      directory = path.join(
-        "units",
-        "unit-" + params.unit,
-        "module-" + params.module,
-        "example-" + params.example
-      ),
-      filename = path.join(directory, "index.html");
+  const params = req.body.params,
+        files = req.body.files,
+        fileNames = Object.keys(files);
 
-  mkdirp(directory, function (err) {
-    if (err) return res.send(err);
-    fs.writeFile(filename, html, function(err) {
+  fileNames.forEach(function (fileName){
+    const directory = path.join(
+            "units",
+            "unit-" + params.unit,
+            "module-" + params.module,
+            "example-" + params.example
+          ),
+          filePath = path.join(directory, fileName),
+          content = files[fileNames];
+
+    mkdirp(directory, function (err) {
       if (err) return res.send(err);
-      res.send("Saved!");
+      fs.writeFile(filePath, content, function(err) {
+        if (err) return res.send(err);
+        res.send("Saved!");
+      });
     });
   });
+
 
   updateIndexJSON();
 });

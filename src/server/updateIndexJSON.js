@@ -2,7 +2,6 @@ var fs = require("fs");
 function updateIndexJSON(){
   var json = { units: listUnits() },
       jsonStr = JSON.stringify(json, null, 2);
-  console.log(jsonStr);
   fs.writeFile("index.json", jsonStr, function(err) {
     if (err) return console.error(err);
     console.log("Updated index.json");
