@@ -1,11 +1,11 @@
+import { select, local } from "d3-selection";
 import { component } from "d3-component";
-import { local } from "d3-selection";
 import { getLoadedFiles } from "./getFiles";
 import magicSandbox from "magic-sandbox";
 
 const iframe = component("iframe", "shadow runner")
   .create(function (){
-    d3.select(this)
+    select(this)
         .attr("width", "960") // 960 X 500 is standard for bl.ocks.org.
         .attr("height", "500")
         .attr("marginwidth", "0") // Have no margin to match with bl.ocks.org.
@@ -14,7 +14,7 @@ const iframe = component("iframe", "shadow runner")
         .attr("scrolling", "no"); // Disable scrolling to match with bl.ocks.org.
   })
   .render(function ({ source, z}){
-    d3.select(this)
+    select(this)
         .attr("srcdoc", source)
         .style("z-index", z);
   });

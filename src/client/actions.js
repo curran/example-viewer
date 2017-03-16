@@ -60,6 +60,7 @@ function fetchFiles(params){
   return function (dispatch, getState){
     const state = getState();
     const files = getFiles(state);
+    // TODO only fetch if necessary
     if(files){
       Object.keys(files).forEach(function (filename){
         dispatch(fetchFile(state.params, filename));
@@ -77,7 +78,7 @@ function fetchFile(params, filename){
       "example-" + params.example,
       filename
     ].join("/");
-    d3.request(url).get(function (xhr){
+    request(url).get(function (xhr){
       dispatch(receiveFile(params, filename, xhr.responseText));;
     });
   };
@@ -111,17 +112,17 @@ export function previous(){
   return { type: "PREVIOUS" };
 };
 
-//
-//  // Saves the HTML content to the server (uses thunk middleware).
-//  save: function (){
-//    return function (dispatch, getState){
-//      d3.request("save")
-//        .header("Content-Type", "application/json")
-//        .post(JSON.stringify(getState()), function (xhr){
-//          dispatch(actions.saved(xhr.responseText));
-//        });
-//    };
-//  },
+// Saves the HTML content to the server (uses thunk middleware).
+export function save(){
+  return function (dispatch, getState){
+    request("save")
+      .header("Content-Type", "application/json")
+      .post(JSON.stringify(getState()), function (xhr){
+        console.log(xhr.responseText);
+        //dispatch(actions.saved(xhr.responseText));
+      });
+  };
+}
 //  
 //  // After a save occurred.
 //  saved: function (message){

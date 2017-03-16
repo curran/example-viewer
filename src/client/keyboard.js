@@ -1,5 +1,5 @@
 import { component } from "d3-component";
-import { next, previous } from "./actions";
+import { next, previous, save } from "./actions";
 
 export default component("div")
   .create(function ({ dispatch }){
@@ -8,10 +8,10 @@ export default component("div")
           S = e.which === 83,
           RIGHT = e.which === 39,
           LEFT = e.which === 37;
-      //if(CTRL && S){
-      //  dispatch(actions.save());
-      //  e.preventDefault();
-      //}
+      if(CTRL && S){
+        dispatch(save());
+        e.preventDefault(); // So the browser doesn't try to save the HTML of the page.
+      }
       if(CTRL && RIGHT){
         dispatch(next());
       }

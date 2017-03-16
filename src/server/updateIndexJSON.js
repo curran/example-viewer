@@ -1,6 +1,8 @@
+var fs = require("fs");
 function updateIndexJSON(){
   var json = { units: listUnits() },
       jsonStr = JSON.stringify(json, null, 2);
+  console.log(jsonStr);
   fs.writeFile("index.json", jsonStr, function(err) {
     if (err) return console.error(err);
     console.log("Updated index.json");
@@ -9,11 +11,12 @@ function updateIndexJSON(){
 
 function listUnits(){
   var units = fs.readdirSync("units");
-  var unitsIndex = {};
-  return units.forEach(function (unit){
-    unitsIndex[unit] = listModules(unit);
+  return units.map(function (unit){
+    return {
+      name: unit,
+      modules: listModules(unit)
+    };
   });
-  return unitsIndex;
 }
 
 function listModules(unit){
@@ -38,11 +41,11 @@ function listExamples(unit, module){
 
 function listFiles(unit, module, example){
   var files = fs.readdirSync("units/" + unit + "/" + module + "/" + example);
-  return files.map(function (file){
-    return {
-      name: file
-    };
+  var filesIndex = {};
+  files.forEach(function (file){
+    filesIndex[file] = false;
   });
+  return filesIndex;
 }
 
 module.exports = updateIndexJSON;

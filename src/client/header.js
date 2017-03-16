@@ -16,7 +16,7 @@ const title = component("div", "header-title")
     const files = getLoadedFiles(d);
     if(files){
       const html = files["index.html"];
-      d3.select(this).text(extractTitle(html));
+      select(this).text(extractTitle(html));
     }
   });
 
