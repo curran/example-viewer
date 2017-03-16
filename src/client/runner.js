@@ -1,4 +1,5 @@
 import { component } from "d3-component";
+import { local } from "d3-selection";
 import { getLoadedFiles } from "./getFiles";
 import magicSandbox from "magic-sandbox";
 
@@ -18,7 +19,13 @@ const iframe = component("iframe", "shadow runner")
         .style("z-index", z);
   });
 
+// TODO fix flickering.
+//const buffers = local();
+
 export default component("div")
+  //.create(function (){
+  //  
+  //})
   .render(function (state){
     const files = getLoadedFiles(state);
     if(files){
