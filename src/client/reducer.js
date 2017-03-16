@@ -22,6 +22,7 @@ export default function (state, action){
         }
       });
     case "RECEIVE_FILE":
+    case "EDIT_FILE":
       return set([
         "index",
         "units", action.params.unit - 1, // Use zero-based index.

@@ -81,11 +81,20 @@ function fetchFile(params, filename){
       dispatch(receiveFile(params, filename, xhr.responseText));;
     });
   };
-};
+}
 
 function receiveFile(params, filename, content){
   return {
     type: "RECEIVE_FILE",
+    params: params,
+    filename: filename,
+    content: content
+  };
+}
+
+export function editFile(params, filename, content){
+  return {
+    type: "EDIT_FILE",
     params: params,
     filename: filename,
     content: content

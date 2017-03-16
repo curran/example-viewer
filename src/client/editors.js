@@ -2,6 +2,7 @@ import { select } from "d3-selection";
 import { component } from "d3-component";
 import editor from "./editor";
 import { getFilesSorted } from "./getFiles";
+import { editFile } from "./actions";
 
 const label = component("div", "editor-label");
 
@@ -11,8 +12,7 @@ const labeledEditor = component("div")
     editor(this, {
       content: content,
       onChange: function (newContent){
-        console.log(state.params, name, newContent);
-        //d.dispatch(contentChange(d.params, d.name, content));
+        dispatch(editFile(state.params, name, newContent));
       }
     });
   });

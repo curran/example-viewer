@@ -18,7 +18,6 @@ export default component("div", "shadow")
     codeMirror.on("change", function (editor, change){
       if(change.origin === "setValue") return;
       onChange(codeMirror.getValue());
-      //dispatch(actions.changeHtml(cm.getValue()));
     });
   })
   .render(function ({ content }){
