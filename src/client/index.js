@@ -28,17 +28,6 @@ store.dispatch(fetchIndex());
 
 //(function (){
 //
-//  // The main entry point for the application.
-//  (function main(){
-//
-//
-//
-//
-//
-//
-//
-//
-//
 //
 //
 //
@@ -57,49 +46,6 @@ store.dispatch(fetchIndex());
 //  }
 //
 //
-//  // User interface component for the running example (top right).
-//  function Runner(){
-//    var previousHtml = "",
-//        currentHtml = "",
-//        BACK = 3, // CodeMirror's z-index is 2, this will be above that.
-//        FRONT = 4, // This is for the "front buffer", visible to the user.
-//        buffers = [BACK, FRONT],
-//        root,
-//        needsSwap = false,
-//        framesPerSecond = 10; // Seems to be the fastest rate without flicker.
-//
-//    setInterval(function (){
-//      if(root){
-//        if(needsSwap){
-//          buffers = buffers.reverse();
-//          root.selectAll(".runner").data(buffers)
-//            .style("z-index", function (z) { return z; });
-//          needsSwap = false;
-//        }
-//        if(currentHtml !== previousHtml){
-//          previousHtml = currentHtml;
-//          root.selectAll(".runner")
-//            .filter(function (z){ return z === BACK; })
-//            .attr("srcdoc", currentHtml);
-//          needsSwap = true;
-//        }
-//      }
-//    }, 1000 / framesPerSecond);
-//
-//    return function (selection, state){
-//      root = selection;
-//      root.selectAll(".runner").data(buffers)
-//        .enter().append("iframe")
-//          .attr("class", "shadow runner")
-//          .attr("width", "960") // 960 X 500 is standard for bl.ocks.org.
-//          .attr("height", "500")
-//          .attr("marginwidth", "0") // Have no margin to match with bl.ocks.org.
-//          .attr("marginheight", "0")
-//          .attr("frameborder", "0px")
-//          .attr("scrolling", "no");
-//      currentHtml = state.html;
-//    };
-//  }
 //
 //
 //  // User interface component for the notification overlay (displays "Saved!").

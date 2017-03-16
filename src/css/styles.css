@@ -10,7 +10,7 @@ body {
 
 /* Adds a shadow effect. Inspired by Material Design "Cards". */
 .shadow {
-  box-shadow: 1px 1px 4px darkgrey;
+  box-shadow: 1px 1px 4px gray;
 }
 
 .header {
@@ -50,6 +50,7 @@ body {
   top: 0px;
   right: 0px;
   background-color: white;
+  z-index: 5;
 }
 
 .overlay {

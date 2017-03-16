@@ -1,16 +1,18 @@
+import { select } from "d3-selection";
 import { component } from "d3-component";
 import router from "./router";
 import { header, spacer } from "./header";
 import editors from "./editors";
+import runner from "./runner";
 
-// This component is responsible for the entire app.
+// The main entry point for the application components.
 export default component("div")
   .render(function (d){
-    router(this, d);
-    header(this, d.state);
-    spacer(this);
-    editors(this, d);
-  //  .call(editor, state)
-  //  .call(runner, state)
+    select(this)
+        .call(router, d)
+        .call(header, d.state)
+        .call(spacer)
+        .call(editors, d)
+        .call(runner, d.state);
   //  .call(notifier, state);
   });
