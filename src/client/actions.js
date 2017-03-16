@@ -1,5 +1,5 @@
 import { json, request } from "d3-request";
-import get from "lodash/get";
+import getFiles from "./getFiles";
 
 // Redux action creators.
 
@@ -58,26 +58,14 @@ export function navigate(params){
 
 function fetchFiles(params){
   return function (dispatch, getState){
-    const { index, params } = getState();
-    if(index && params){
-      const files = getFiles(index, params);
-      if(files){
-        Object.keys(files).forEach(function (filename){
-          dispatch(fetchFile(params, filename));
-        });
-      }
+    const state = getState();
+    const files = getFiles(state);
+    if(files){
+      Object.keys(files).forEach(function (filename){
+        dispatch(fetchFile(state.params, filename));
+      });
     }
   };
-}
-
-// Gets the listing of file entries for the current example.
-function getFiles(index, params){
-  return get(index, [
-    "units", params.unit - 1, // Use zero-based index.
-    "modules", params.module - 1,
-    "examples", params.example - 1,
-    "files"
-  ]);
 }
 
 function fetchFile(params, filename){

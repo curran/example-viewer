@@ -6,6 +6,8 @@ import { fetchIndex } from "./actions";
 import reducer from "./reducer";
 import Router from "./router";
 import header from "./header";
+import editor from "./editor";
+import getFiles from "./getFiles";
 
 // Set up Redux.
 var store = createStore(reducer, applyMiddleware(thunk));
@@ -20,9 +22,8 @@ var router = Router(store.dispatch);
 // Re-render the application when state changes.
 store.subscribe(function (){
   var state = store.getState();
-  console.log(state);
-  d3.select("body")
-    .call(header, state)
+  header(document.body, state);
+  editor(document.body, getFiles(state));
   //  .call(editor, state)
   //  .call(runner, state)
   //  .call(notifier, state);
@@ -47,41 +48,6 @@ store.dispatch(fetchIndex());
 //
 //
 //
-//  // User interface component for the code editor.
-//  function Editor(dispatch, actions){
-//    var codemirror = d3.local();
-//    return function (selection, state){
-//      var editor = selection.selectAll(".editor").data([1]);
-//      editor = editor.merge(
-//        editor.enter().append("div")
-//          .attr("class", "editor shadow")
-//          .each(function (){
-//            var cm = CodeMirror(this, {
-//              lineNumbers: false,
-//              mode: "htmlmixed"
-//            });
-//
-//            // Inlet provides the interactive sliders and color pickers.
-//            Inlet(cm);
-//
-//            cm.on("change", function (editor, change){
-//              if(change.origin === "setValue") return;
-//              dispatch(actions.changeHtml(cm.getValue()));
-//            });
-//
-//            codemirror.set(this, cm);
-//          }));
-//
-//      if(state.html){
-//        editor.each(function (){
-//          var cm = codemirror.get(this);
-//          if(cm.getValue() !== state.html){
-//            cm.setValue(state.html);
-//          }
-//        });
-//      }
-//    };
-//  }
 //
 //
 //  // Translates global keyboard events into dispatched actions.
