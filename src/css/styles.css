@@ -61,3 +61,8 @@ body {
   pointer-events: none;
   z-index: 6; /* Above everything else. */
 }
+
+.editor-label {
+  font-size: 2em;
+  margin-left: 5px;
+}
