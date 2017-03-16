@@ -30,10 +30,6 @@ export default function (state, action){
         "examples", action.params.example - 1,
         "files", action.filename
       ], action.content, state);
-//    case "CHANGE_HTML":
-//      return Object.assign(state, {
-//        html: action.html
-//      });
     case "NEXT":
       return go(state, 1);
     case "PREVIOUS":
@@ -49,17 +45,13 @@ export default function (state, action){
 
 // Goes to the next or previous example.
 function go(state, increment){
-  var FORWARD = (increment === 1);
-  return Object.assign(state, {
-    // TODO use lodash set?
-    params: Object.assign(state.params, {
-      example: state.params.example + increment
-    })
+  const example = state.params.example + increment;
+  return set("params.example", example, state);
+  //var FORWARD = (increment === 1);
     //notify: {
     //  message: FORWARD ? "→" : "←",
     //  position: FORWARD ? 0.75 : 0.25,
     //  size: 80,
     //  time: Date.now()
     //}
-  });
 }
