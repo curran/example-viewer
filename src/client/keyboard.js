@@ -1,6 +1,5 @@
 import { component } from "d3-component";
-import { next } from "./actions";
-//import { next, previous } from "./actions";
+import { next, previous } from "./actions";
 
 export default component("div")
   .create(function ({ dispatch }){
@@ -16,9 +15,9 @@ export default component("div")
       if(CTRL && RIGHT){
         dispatch(next());
       }
-      //if(CTRL && LEFT){
-      //  dispatch(actions.previous());
-      //}
+      if(CTRL && LEFT){
+        dispatch(previous());
+      }
     });
   });
 

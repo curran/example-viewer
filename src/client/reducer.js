@@ -36,8 +36,8 @@ export default function (state, action){
 //      });
     case "NEXT":
       return go(state, 1);
-//    case "PREVIOUS":
-//      return go(state, -1);
+    case "PREVIOUS":
+      return go(state, -1);
 //    case "SAVED":
 //      return Object.assign(state, {
 //        notify: action

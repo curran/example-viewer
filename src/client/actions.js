@@ -105,31 +105,12 @@ export function editFile(params, filename, content){
 export function next(){
   return { type: "NEXT" };
 };
-//
-//  // When the user wants to go to the previous example.
-//  previous: function (){ return { type: "PREVIOUS" }; },
-//
-//  // When the HTML content is changed.
-//  changeHtml: function (html){
-//    return { type: "CHANGE_HTML", html: html };
-//  },
-//
-//  // Fetches the HTML content from the server (uses thunk middleware).
-//  fetchHtml: function (){
-//    return function (dispatch, getState){
-//      var params = getState().params;
-//      var url = [
-//        "units",
-//        "unit-" + params.unit,
-//        "module-" + params.module,
-//        "example-" + params.example,
-//        "index.html"
-//      ].join("/");
-//      d3.request(url).get(function (xhr){
-//        dispatch(actions.changeHtml(xhr.responseText));;
-//      });
-//    }
-//  },
+
+// When the user wants to go to the previous example.
+export function previous(){
+  return { type: "PREVIOUS" };
+};
+
 //
 //  // Saves the HTML content to the server (uses thunk middleware).
 //  save: function (){
