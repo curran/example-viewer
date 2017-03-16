@@ -99,11 +99,13 @@ export function editFile(params, filename, content){
     filename: filename,
     content: content
   };
-}
+};
 
-//
-//  // When the user wants to go to the next example.
-//  next: function (){ return { type: "NEXT" }; },
+// When the user wants to go to the next example.
+export function next(){
+  console.log("Next action!");
+  return { type: "NEXT" };
+};
 //
 //  // When the user wants to go to the previous example.
 //  previous: function (){ return { type: "PREVIOUS" }; },

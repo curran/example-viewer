@@ -1,4 +1,5 @@
 import { component } from "d3-component";
+import { next } from "./actions";
 //import { next, previous } from "./actions";
 
 export default component("div")
@@ -8,14 +9,13 @@ export default component("div")
           S = e.which === 83,
           RIGHT = e.which === 39,
           LEFT = e.which === 37;
-      console.log("HERE");
       //if(CTRL && S){
       //  dispatch(actions.save());
       //  e.preventDefault();
       //}
-      //if(CTRL && RIGHT){
-      //  dispatch(actions.next());
-      //}
+      if(CTRL && RIGHT){
+        dispatch(next());
+      }
       //if(CTRL && LEFT){
       //  dispatch(actions.previous());
       //}
