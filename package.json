@@ -37,7 +37,7 @@
     "d3-selection": "^1.0.5",
     "d3-transition": "^1.0.4",
     "lodash": "^4.17.4",
-    "magic-sandbox": "^0.3.0",
+    "magic-sandbox": "^0.6.0",
     "redux": "^3.6.0",
     "redux-thunk": "^2.2.0",
     "rollup": "^0.41.5",
