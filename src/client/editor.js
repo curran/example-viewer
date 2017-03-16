@@ -4,7 +4,7 @@ import { select, local } from "d3-selection";
 const codeMirrorLocal = local();
 
 // User interface component for the code editor.
-export default component("div")
+export default component("div", "shadow")
   .create(function ({ onChange }){
     const codeMirror = codeMirrorLocal
       .set(this, CodeMirror(this, {
@@ -17,12 +17,11 @@ export default component("div")
 
     codeMirror.on("change", function (editor, change){
       if(change.origin === "setValue") return;
-      onChange(cm.getValue());
+      onChange(codeMirror.getValue());
       //dispatch(actions.changeHtml(cm.getValue()));
     });
   })
   .render(function ({ content }){
-    console.log(content);
     const codeMirror = codeMirrorLocal.get(this);
     if(codeMirror.getValue() !== content){ // TODO use timestamp here?
       codeMirror.setValue(content);

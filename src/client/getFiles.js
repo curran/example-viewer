@@ -13,14 +13,10 @@ export function getFiles({ index, params }){
 // Gets the listing of files as an array of objects.
 export function getFilesSorted(state){
   const filesDictionary = getFiles(state);
-  console.log(filesDictionary);
-  if(filesDictionary){
-    return Object.keys(filesDictionary)
-      .map((name) => ({
-        name,
-        content: filesDictionary[name]
-      }))
-      .filter((d) => d.content);
-  }
-  return [];
+  return (filesDictionary ? Object.keys(filesDictionary) : [])
+    .map((name) => ({
+      name,
+      content: filesDictionary[name]
+    }))
+    .filter((d) => d.content);
 };

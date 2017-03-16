@@ -10,7 +10,7 @@ body {
 
 /* Adds a shadow effect. Inspired by Material Design "Cards". */
 .shadow {
-  box-shadow: 1px 1px 4px grey;
+  box-shadow: 1px 1px 4px darkgrey;
 }
 
 .header {
