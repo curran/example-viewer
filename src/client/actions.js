@@ -123,14 +123,18 @@ export function save(){
     request("save")
       .header("Content-Type", "application/json")
       .post(JSON.stringify(payload), function (xhr){
-        console.log(xhr.responseText);
-        //dispatch(actions.saved(xhr.responseText));
+        //console.log(xhr.responseText);
+        dispatch(saved(xhr.responseText));
       });
   };
 }
-//  
-//  // After a save occurred.
-//  saved: function (message){
-//    return { type: "SAVED", message: message, time: Date.now() };
-//  }
+
+// After a save occurred.
+function saved(message){
+  return {
+    type: "SAVED",
+    message: message,
+    time: Date.now()
+  };
+}
 

@@ -34,10 +34,10 @@ export default function (state, action){
       return go(state, 1);
     case "PREVIOUS":
       return go(state, -1);
-//    case "SAVED":
-//      return Object.assign(state, {
-//        notify: action
-//      });
+    case "SAVED":
+      return Object.assign(state, {
+        notify: action
+      });
     default:
       return state;
   }
