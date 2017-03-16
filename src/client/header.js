@@ -8,8 +8,7 @@ const breadcrumbs = component("div", "header-breadcrumbs")
             "Module " + params.module,
             "Example " + params.example
           ].join(" / "));
-        }),
-      spacer = component("div", "header-spacer");
+        });
 
 // TODO restore the title.
 //const title = component("div", "header-title");
@@ -18,10 +17,13 @@ const breadcrumbs = component("div", "header-breadcrumbs")
   //    .text(d.html.match(/title>(.*?)</)[1]);
   //}
 
+const spacer = component("div", "header-spacer");
+
 // User interface component for the header text (top left).
-export default component("div", "header")
+const header = component("div", "header")
   .render(function (state){
     breadcrumbs(this, state.params);
-    spacer(this);
     //title(this, state);
   });
+
+export { header, spacer };
