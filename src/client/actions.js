@@ -1,5 +1,5 @@
 import { json, request } from "d3-request";
-import getFiles from "./getFiles";
+import { getFiles } from "./getFiles";
 
 // Redux action creators.
 

@@ -3,8 +3,9 @@ import { select } from "d3-selection";
 
 // User interface component for the code editor.
 export default component("pre", "editor")
-  .render(function (d){
-    select(this).text("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" + JSON.stringify(d, null, 2));
+  .render(function ({ state, dispatch}){
+    var filenames = Object.keys(files);
+    select(this).text(JSON.stringify(d, null, 2));
   });
 
 //export default function (dispatch, actions){
