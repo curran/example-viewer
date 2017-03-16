@@ -32,18 +32,6 @@ store.dispatch(fetchIndex());
 //
 //
 //
-//  // Translates global keyboard events into dispatched actions.
-//  function Keyboard(dispatch, actions){
-//    window.addEventListener("keydown", function (e){
-//      var CTRL = e.ctrlKey,
-//          S = e.which === 83,
-//          RIGHT = e.which === 39,
-//          LEFT = e.which === 37;
-//      if(CTRL && S){ dispatch(actions.save()); e.preventDefault(); }
-//      if(CTRL && RIGHT){ dispatch(actions.next()); }
-//      if(CTRL && LEFT){ dispatch(actions.previous()); }
-//    });
-//  }
 //
 //
 //
