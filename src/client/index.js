@@ -5,14 +5,14 @@ import thunk from "redux-thunk";
 import { fetchIndex } from "./actions";
 import reducer from "./reducer";
 import Router from "./router";
+import header from "./header";
 
 // Set up Redux.
 var store = createStore(reducer, applyMiddleware(thunk));
 
 // Initialize application components.
-var router = Router(store.dispatch);//, actions),
+var router = Router(store.dispatch);
 //    editor = Editor(store.dispatch, actions),
-//    header = Header(),
 //    runner = Runner(),
 //    notifier = Notifier();
 //Keyboard(store.dispatch, actions);
@@ -21,8 +21,8 @@ var router = Router(store.dispatch);//, actions),
 store.subscribe(function (){
   var state = store.getState();
   console.log(state);
-  //d3.select("body")
-  //  .call(header, state)
+  d3.select("body")
+    .call(header, state)
   //  .call(editor, state)
   //  .call(runner, state)
   //  .call(notifier, state);
@@ -45,33 +45,6 @@ store.dispatch(fetchIndex());
 //
 //
 //
-//  // User interface component for the header text (top left).
-//  function Header(){
-//    return function (selection, state){
-//      var header = selection.selectAll(".header").data([1]);
-//      var headerEnter = header.enter().append("div").attr("class", "header");
-//      headerEnter.append("div").attr("class", "header-breadcrumbs");
-//      headerEnter.append("div").attr("class", "header-title");
-//      header = header.merge(headerEnter);
-//
-//      selection.selectAll(".header-spacer").data([1])
-//        .enter().append("div").attr("class", "header-spacer");
-//
-//      if(state.params){
-//        header.select(".header-breadcrumbs")
-//          .text([
-//            "Unit " + state.params.unit,
-//            "Module " + state.params.module,
-//            "Example " + state.params.example
-//          ].join(" / "));
-//      }
-//
-//      if(state.html){
-//        header.select(".header-title")
-//          .text(state.html.match(/title>(.*?)</)[1]);
-//      }
-//    }
-//  }
 //
 //
 //  // User interface component for the code editor.
