@@ -5,9 +5,7 @@ import thunk from "redux-thunk";
 import { fetchIndex } from "./actions";
 import reducer from "./reducer";
 import Router from "./router";
-import header from "./header";
-import editor from "./editor";
-import getFiles from "./getFiles";
+import app from "./app";
 
 // Set up Redux.
 var store = createStore(reducer, applyMiddleware(thunk));
@@ -21,12 +19,8 @@ var router = Router(store.dispatch);
 
 // Re-render the application when state changes.
 store.subscribe(function (){
-  var state = store.getState();
-  header(document.body, state);
-  editor(document.body, getFiles(state));
-  //  .call(editor, state)
-  //  .call(runner, state)
-  //  .call(notifier, state);
+  const state = store.getState();
+  app(document.body, state);
   router(state);
 });
 

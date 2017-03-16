@@ -5,11 +5,7 @@ export default function Router(dispatch){
   navigateFromHash();
   window.addEventListener("hashchange", navigateFromHash);
   function navigateFromHash(){
-    var params = parseHash();
-    dispatch(navigate(params));
-    //if(params){
-    //  dispatch(fetch());
-    //}
+    dispatch(navigate(parseHash()));
   }
 
   function parseHash(){
