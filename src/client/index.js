@@ -36,44 +36,4 @@ store.dispatch(fetchIndex());
 //
 //
 //
-//  // User interface component for the notification overlay (displays "Saved!").
-//  function Notifier(){
-//    var previousTime = 0;
-//    return function (selection, state){
-//      selection.selectAll(".overlay").data([1])
-//        .enter().append("div").attr("class", "overlay")
-//        .append("svg");
-//
-//      // Trigger the notification based on a changed timestamp.
-//      if(state.notify && state.notify.time !== previousTime){
-//        var div = selection.select(".overlay").node(),
-//            svg = d3.select(div).select("svg"),
-//            width = div.clientWidth,
-//            height = div.clientHeight,
-//            position = state.notify.position || 0.5,
-//            size = state.notify.size || 20;
-//
-//        svg.attr("width", width).attr("height", height);
-//
-//        var text = svg.selectAll("text").data([1]);
-//        text
-//          .enter().append("text")
-//            .style("text-shadow", "0px 0px 10px white")
-//            .attr("text-anchor", "middle")
-//            .attr("alignment-baseline", "middle")
-//          .merge(text)
-//            .interrupt("pop")
-//            .attr("x", width * position)
-//            .attr("y", height / 2)
-//            .attr("font-size", size + "em")
-//            .attr("opacity", 1)
-//            .text(state.notify.message)
-//          .transition("pop").duration(700).ease(d3.easeLinear)
-//            .attr("font-size", (size * 1.2) + "em")
-//            .attr("opacity", 0);
-//
-//        previousTime = state.notify.time;
-//      }
-//    };
-//  }
 //}());

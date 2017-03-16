@@ -5,6 +5,7 @@ import { header, spacer } from "./header";
 import editors from "./editors";
 import runner from "./runner";
 import keyboard from "./keyboard";
+import notifier from "./notifier";
 
 // The main entry point for the application components.
 export default component("div")
@@ -15,6 +16,6 @@ export default component("div")
         .call(header, d.state)
         .call(spacer)
         .call(editors, d)
-        .call(runner, d.state);
-  //  .call(notifier, state);
+        .call(runner, d.state)
+        .call(notifier, d.state);
   });

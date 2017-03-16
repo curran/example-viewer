@@ -45,13 +45,17 @@ export default function (state, action){
 
 // Goes to the next or previous example.
 function go(state, increment){
+
+  // Update the example param in the state.
   const example = state.params.example + increment;
-  return set("params.example", example, state);
-  //var FORWARD = (increment === 1);
-    //notify: {
-    //  message: FORWARD ? "→" : "←",
-    //  position: FORWARD ? 0.75 : 0.25,
-    //  size: 80,
-    //  time: Date.now()
-    //}
+  state = set("params.example", example, state);
+
+  // Update the notification in the state.
+  const FORWARD = (increment === 1);
+  return set("notify", {
+    message: FORWARD ? "→" : "←",
+    position: FORWARD ? 0.75 : 0.25,
+    size: 40,
+    time: Date.now()
+  }, state);
 }
