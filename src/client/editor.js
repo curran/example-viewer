@@ -1,15 +1,15 @@
 import { component } from "d3-component";
-import { select } from "d3-selection";
+import { select, local } from "d3-selection";
+
+const codemirror = local();
 
 // User interface component for the code editor.
-export default component("pre", "editor")
-  .render(function ({ state, dispatch}){
-    var filenames = Object.keys(files);
-    select(this).text(JSON.stringify(d, null, 2));
+export default component("pre")
+  .render(function ({ content, onChange}){
+    d3.select(this).text(content);
   });
 
 //export default function (dispatch, actions){
-//  var codemirror = d3.local();
 //  return function (selection, state){
 //    var editor = selection.selectAll(".editor").data([1]);
 //    editor = editor.merge(
