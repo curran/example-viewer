@@ -2,9 +2,7 @@ import { component } from "d3-component";
 import { getLoadedFiles } from "./getFiles";
 import magicSandbox from "magic-sandbox";
 
-console.log(magicSandbox);
-
-export default component("iframe", "shadow runner")
+const iframe = component("iframe", "shadow runner")
   .create(function (){
     d3.select(this)
         .attr("width", "960") // 960 X 500 is standard for bl.ocks.org.
@@ -14,11 +12,18 @@ export default component("iframe", "shadow runner")
         .attr("frameborder", "0px") // We'll have a shadow instead of a border.
         .attr("scrolling", "no"); // Disable scrolling to match with bl.ocks.org.
   })
+  .render(function ({ source, z}){
+    d3.select(this)
+        .attr("srcdoc", source)
+        .style("z-index", z);
+  });
+
+export default component("div")
   .render(function (state){
     const files = getLoadedFiles(state);
     if(files){
       const source = magicSandbox(files["index.html"], files);
-      d3.select(this).attr("srcdoc", source);
+      iframe(this, {source, z: 4});
     }
   });
 
