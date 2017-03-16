@@ -9,6 +9,7 @@
             {
               "name": "example-1",
               "files": {
+                "data.csv": false,
                 "index.html": false
               }
             },

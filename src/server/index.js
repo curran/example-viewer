@@ -31,13 +31,14 @@ app.post("/save", function (req, res){
 
     mkdirp(directory, function (err) {
       if (err) return res.send(err);
-      fs.writeFile(filePath, content, function(err) {
-        if (err) return res.send(err);
-        res.send("Saved!");
-      });
+      fs.writeFileSync(filePath, content);
+      //, function(err) {
+      //  if (err) return res.send(err);
+      //});
     });
   });
 
+  res.send("Saved!");
 
   updateIndexJSON();
 });
