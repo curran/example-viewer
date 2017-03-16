@@ -1,28 +1,27 @@
-// User interface component for the header text (top left).
-export default function (selection, state){
+import { component } from "d3-component";
+import { select } from "d3-selection";
 
-  // TODO migrate to d3-component in here.
-  var header = selection.selectAll(".header").data([1]);
-  var headerEnter = header.enter().append("div").attr("class", "header");
-  headerEnter.append("div").attr("class", "header-breadcrumbs");
-  headerEnter.append("div").attr("class", "header-title");
-  header = header.merge(headerEnter);
+const breadcrumbs = component("div", "header-breadcrumbs")
+        .render(function (params){
+          select(this).text([
+            "Unit " + params.unit,
+            "Module " + params.module,
+            "Example " + params.example
+          ].join(" / "));
+        }),
+      spacer = component("div", "header-spacer");
 
-  selection.selectAll(".header-spacer").data([1])
-    .enter().append("div").attr("class", "header-spacer");
-
-  if(state.params){
-    header.select(".header-breadcrumbs")
-      .text([
-        "Unit " + state.params.unit,
-        "Module " + state.params.module,
-        "Example " + state.params.example
-      ].join(" / "));
-  }
-
-  // TODO restore this.
-  //if(state.html){
+// TODO restore the title.
+//const title = component("div", "header-title");
+  //if(d.html){
   //  header.select(".header-title")
-  //    .text(state.html.match(/title>(.*?)</)[1]);
+  //    .text(d.html.match(/title>(.*?)</)[1]);
   //}
-}
+
+// User interface component for the header text (top left).
+export default component("div", "header")
+  .render(function (state){
+    breadcrumbs(this, state.params);
+    spacer(this);
+    //title(this, state);
+  });
