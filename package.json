@@ -10,7 +10,9 @@
     "postpublish": "git push && git push --tags"
   },
   "files": [
-    "example-viewer-dist"
+    "cli.js",
+    "example-viewer-dist",
+    "index.html"
   ],
   "repository": {
     "type": "git",
