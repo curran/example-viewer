@@ -6,7 +6,7 @@
   "bin": "./cli.js",
   "scripts": {
     "start": "node src/server/index.js",
-    "build": "rollup -c; cp ./src/css/styles.css ./example-viewer-dist",
+    "build": "rollup -c; cp src/css/styles.css example-viewer-dist; uglifyjs example-viewer-dist/bundle.js -c -m -o example-viewer-dist/bundle.min.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -46,6 +46,7 @@
     "rollup-plugin-babel": "^2.7.1",
     "rollup-plugin-commonjs": "^8.0.2",
     "rollup-plugin-node-resolve": "^2.0.0",
-    "rollup-plugin-replace": "^1.1.1"
+    "rollup-plugin-replace": "^1.1.1",
+    "uglify-js": "^2.8.13"
   }
 }
