@@ -42,20 +42,6 @@ export function navigate(params){
   };
 };
 
-// See redux.js.org/docs/advanced/AsyncActions.html
-//function fetchFilesIfNeeded(params){
-//  return function (dispatch, getState){
-//    if(shouldFetchFiles(getState(), params)){
-//      dispatch(fetchFiles(params));
-//    }
-//  };
-//};
-//
-//function shouldFetchFiles(state, params){
-//  return get(state, ["units", params.unit, params.module, params.example, "files"]);
-//}
-
-
 function fetchFiles(params){
   return function (dispatch, getState){
     const state = getState();
@@ -79,7 +65,7 @@ function fetchFile(params, filename){
       filename
     ].join("/");
     request(url).get(function (xhr){
-      dispatch(receiveFile(params, filename, xhr.responseText));;
+      dispatch(receiveFile(params, filename, xhr.responseText.trim()));;
     });
   };
 }
