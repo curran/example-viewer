@@ -12,7 +12,8 @@
   "files": [
     "cli.js",
     "example-viewer-dist",
-    "index.html"
+    "index.html",
+    "src"
   ],
   "repository": {
     "type": "git",
