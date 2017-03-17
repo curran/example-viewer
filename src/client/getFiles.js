@@ -24,8 +24,37 @@ export function getLoadedFiles(state){
 // Gets the listing of files as an array of objects.
 export function getFilesSorted(state){
   const files = getLoadedFiles(state);
-  return files ? Object.keys(files).map((name) => ({
-    name,
-    content: files[name]
-  })) : [];
+  if(files){
+    const filesArr = Object.keys(files)
+      .map((name) => ({
+        name,
+        content: files[name]
+      }));
+    filesArr.sort(fileComparator);
+    return filesArr;
+  } else {
+    return [];
+  }
 };
+
+function fileComparator(a, b){
+  return filePrecedence(a) - filePrecedence(b);
+}
+
+function filePrecedence({name}){
+  var ext = name.substr(name.lastIndexOf('.'));
+
+  if(name === 'index.html'){
+    return 0;
+  } else if (ext === '.html') {
+    return 1;
+  } else if (ext === '.js') {
+    return 2;
+  } else if (ext === '.json') {
+    return 3;
+  } else if (ext === '.csv') {
+    return 4;
+  } else {
+    return 5;
+  }
+}
