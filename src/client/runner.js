@@ -27,9 +27,20 @@ export default component("div")
   //  
   //})
   .render(function (state){
-    const files = getLoadedFiles(state);
-    if(files){
-      const source = magicSandbox(files["index.html"], files);
+    const loadedFiles = getLoadedFiles(state);
+    if(loadedFiles){
+
+      // Transform into the format that magicSandbox expects.
+      // TODO make this the overall format? Seems better, more explicit.
+      const files = {};
+      Object.keys(loadedFiles).forEach(function (name){
+        files[name] = {
+          content : loadedFiles[name]
+        };
+      });
+
+      const template = loadedFiles["index.html"];
+      const source = magicSandbox(template, files);
       iframe(this, {source, z: 4});
     }
   });
