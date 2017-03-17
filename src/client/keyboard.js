@@ -1,13 +1,15 @@
 import { component } from "d3-component";
-import { next, previous, save } from "./actions";
+import { next, previous, save, insert } from "./actions";
 
 export default component("div")
   .create(function ({ dispatch }){
     window.addEventListener("keydown", function (e){
-      var CTRL = e.ctrlKey,
-          S = e.which === 83,
-          RIGHT = e.which === 39,
-          LEFT = e.which === 37;
+      const CTRL = e.ctrlKey,
+            S = e.which === 83,
+            RIGHT = e.which === 39,
+            LEFT = e.which === 37,
+            I = e.which === 73;
+
       if(CTRL && S){
         dispatch(save());
         e.preventDefault(); // So the browser doesn't try to save the HTML of the page.
@@ -17,6 +19,9 @@ export default component("div")
       }
       if(CTRL && LEFT){
         dispatch(previous());
+      }
+      if(CTRL && I){
+        dispatch(insert());
       }
     });
   });

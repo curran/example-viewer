@@ -138,3 +138,9 @@ function saved(message){
   };
 }
 
+// The user wants to insert a new example
+// that is a copy of the current example.
+export function insert(){
+  return { type: "INSERT" };
+}
+
