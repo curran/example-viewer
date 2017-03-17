@@ -43,6 +43,10 @@ app.post("/save", function (req, res){
   });
 });
 
+// Update the index when the server starts,
+// in case files have changed outside the editor.
+updateIndexJSON();
+
 app.listen(3000, function () {
   console.log("Listening at http://localhost:3000");
 });

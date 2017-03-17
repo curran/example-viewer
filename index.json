@@ -16,6 +16,7 @@
             {
               "name": "example-2",
               "files": {
+                "data.csv": false,
                 "index.html": false
               }
             },
