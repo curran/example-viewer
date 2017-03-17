@@ -8,27 +8,29 @@
           "examples": [
             {
               "name": "example-1",
-              "files": [
-                "index.html"
-              ]
+              "files": {
+                "data.csv": false,
+                "index.html": false
+              }
             },
             {
               "name": "example-2",
-              "files": [
-                "index.html"
-              ]
+              "files": {
+                "data.csv": false,
+                "index.html": false
+              }
             },
             {
               "name": "example-3",
-              "files": [
-                "index.html"
-              ]
+              "files": {
+                "index.html": false
+              }
             },
             {
               "name": "example-4",
-              "files": [
-                "index.html"
-              ]
+              "files": {
+                "index.html": false
+              }
             }
           ]
         }
