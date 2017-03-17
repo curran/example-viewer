@@ -6,7 +6,8 @@
   "bin": "./cli.js",
   "scripts": {
     "start": "node src/server/index.js",
-    "prepublish": "rollup -c; cp src/css/styles.css example-viewer-dist; uglifyjs example-viewer-dist/bundle.js -c -m -o example-viewer-dist/bundle.min.js"
+    "prepublish": "rollup -c; cp src/css/styles.css example-viewer-dist; uglifyjs example-viewer-dist/bundle.js -c -m -o example-viewer-dist/bundle.min.js",
+    "postpublish": "git push && git push --tags"
   },
   "repository": {
     "type": "git",
