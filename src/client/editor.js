@@ -5,26 +5,29 @@ const codeMirrorLocal = local();
 
 // User interface component for the code editor.
 export default component("div", "shadow")
-  .create(function ({ onChange }){
-    const codeMirror = codeMirrorLocal
-      .set(this, CodeMirror(this, {
+  .create(function (){
+    const my = codeMirrorLocal.set(this, {
+      codeMirror: CodeMirror(this, {
         lineNumbers: false,
         mode: "htmlmixed"
-      }));
+      }),
+      onChange: undefined // Will be set in the render hook.
+    });
+
+    my.codeMirror.on("change", function (editor, change){
+      if(change.origin === "setValue") return;
+      my.onChange && my.onChange(my.codeMirror.getValue());
+    });
 
     // Inlet provides the interactive sliders and color pickers.
-    Inlet(codeMirror);
-
-    codeMirror.on("change", function (editor, change){
-      if(change.origin === "setValue") return;
-      onChange(codeMirror.getValue());
-    });
+    Inlet(my.codeMirror);
   })
-  .render(function ({ content }){
-    const codeMirror = codeMirrorLocal.get(this);
-    if(codeMirror.getValue() !== content){ // TODO use timestamp here?
-      codeMirror.setValue(content);
+  .render(function ({ content, onChange }){
+    const my = codeMirrorLocal.get(this);
+    if(my.codeMirror.getValue() !== content){ // TODO use timestamp here?
+      my.codeMirror.setValue(content);
     }
+    my.onChange = onChange;
   });
 
 //export default function (dispatch, actions){
