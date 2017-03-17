@@ -1,5 +1,5 @@
 import { json, request } from "d3-request";
-import { getFiles } from "./getFiles";
+import { getFiles, getLoadedFiles } from "./getFiles";
 
 // Redux action creators.
 
@@ -60,8 +60,8 @@ function fetchFiles(params){
   return function (dispatch, getState){
     const state = getState();
     const files = getFiles(state);
-    // TODO only fetch if necessary
-    if(files){
+    const loaded = getLoadedFiles(state);
+    if(files && !loaded){
       Object.keys(files).forEach(function (filename){
         dispatch(fetchFile(state.params, filename));
       });

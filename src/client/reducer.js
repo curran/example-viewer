@@ -1,4 +1,5 @@
 import set from "lodash/fp/set";
+import { getFiles } from "./getFiles";
 
 // The Redux reducer.
 export default function (state, action){
@@ -36,6 +37,15 @@ export default function (state, action){
       return go(state, -1);
     case "SAVED":
       return set("notify", action, state);
+    case "INSERT":
+      state = set([
+        "index",
+        "units", state.params.unit - 1, // Use zero-based index.
+        "modules", state.params.module - 1,
+        "examples", state.params.example, // In the next example,
+        "files"
+      ], getFiles(state), state); // set files of the current example.
+      return go(state, 1);
     default:
       return state;
   }
