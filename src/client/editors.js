@@ -4,7 +4,7 @@ import editor from "./editor";
 import { getFilesSorted } from "./getFiles";
 import { editFile } from "./actions";
 
-const label = component("div", "editor-label");
+const label = component("div", "editor-filename-label");
 
 const labeledEditor = component("div")
   .render(function ({ name, content, state, dispatch}){
