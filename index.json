@@ -1,7 +1,7 @@
 {
   "units": [
     {
-      "name": "unit-1",
+      "name": "unit-01",
       "modules": [
         {
           "name": "module-1",

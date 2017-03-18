@@ -1,6 +1,11 @@
 var fs = require("fs");
+var path = require("path");
+var d3 = require("d3-format");
+var twoDigits = d3.format("02.0f");
 function updateIndexJSON(){
-  var json = { units: listUnits() },
+  var json = {
+        units: listUnits("units")
+      },
       jsonStr = JSON.stringify(json, null, 2);
   fs.writeFile("index.json", jsonStr, function(err) {
     if (err) return console.error(err);
@@ -8,8 +13,27 @@ function updateIndexJSON(){
   });
 }
 
-function listUnits(){
-  var units = fs.readdirSync("units");
+function renameIfNeeed(dir){
+  return function (name){
+    var split= name.split("-");
+
+    // If convention is like "unit-1".
+    if(split[1].length === 1){
+
+      // Rename to convention like "unit-01".
+      split[1] = "0" + split[1];
+      var oldName = name;
+      name = split.join("-");
+      fs.renameSync(path.join(dir, oldName), path.join(dir, name));
+    }
+    return name;
+  };
+}
+
+function listUnits(dir){
+  var units = fs.readdirSync(dir)
+    .map(renameIfNeeed(dir));
+  console.log(units);
   return units.map(function (unit){
     return {
       name: unit,
