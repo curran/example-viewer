@@ -1,7 +1,7 @@
 var fs = require("fs");
 var path = require("path");
-var d3 = require("d3-format");
 var twoDigits = d3.format("02.0f");
+
 function updateIndexJSON(){
   var json = {
         units: listUnits("units")
