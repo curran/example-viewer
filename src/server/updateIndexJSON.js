@@ -33,17 +33,17 @@ function renameIfNeeed(dir){
 function listUnits(dir){
   var units = fs.readdirSync(dir)
     .map(renameIfNeeed(dir));
-  console.log(units);
   return units.map(function (unit){
     return {
       name: unit,
-      modules: listModules(unit)
+      modules: listModules(unit, path.join(dir, unit))
     };
   });
 }
 
-function listModules(unit){
-  var modules = fs.readdirSync("units/" + unit);
+function listModules(unit, dir){
+  var modules = fs.readdirSync("units/" + unit)
+    .map(renameIfNeeed(dir));
   return modules.map(function (module){
     return {
       name: module,

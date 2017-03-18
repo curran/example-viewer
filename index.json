@@ -4,7 +4,7 @@
       "name": "unit-01",
       "modules": [
         {
-          "name": "module-1",
+          "name": "module-01",
           "examples": [
             {
               "name": "example-1",
