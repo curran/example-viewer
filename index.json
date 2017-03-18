@@ -1,33 +1,33 @@
 {
   "units": [
     {
-      "name": "unit-1",
+      "name": "unit-01",
       "modules": [
         {
-          "name": "module-1",
+          "name": "module-01",
           "examples": [
             {
-              "name": "example-1",
+              "name": "example-01",
               "files": {
                 "data.csv": false,
                 "index.html": false
               }
             },
             {
-              "name": "example-2",
+              "name": "example-02",
               "files": {
                 "data.csv": false,
                 "index.html": false
               }
             },
             {
-              "name": "example-3",
+              "name": "example-03",
               "files": {
                 "index.html": false
               }
             },
             {
-              "name": "example-4",
+              "name": "example-04",
               "files": {
                 "index.html": false
               }

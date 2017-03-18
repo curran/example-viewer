@@ -1,5 +1,8 @@
 import { json, request } from "d3-request";
+import { format } from "d3-format";
 import { getFiles, getLoadedFiles } from "./getFiles";
+
+const twoDigits = format("02.0f");
 
 // Redux action creators.
 
@@ -25,7 +28,6 @@ export function receiveIndex(data){
       type: "RECEIVE_INDEX",
       data: data
     });
-    //dispatch(fetchFilesIfNeeded(params));
     dispatch(fetchFiles());
   }
 };
@@ -37,7 +39,6 @@ export function navigate(params){
       type: "NAVIGATE",
       params: params
     });
-    //dispatch(fetchFilesIfNeeded(params));
     dispatch(fetchFiles());
   };
 };
@@ -47,6 +48,8 @@ function fetchFiles(params){
     const state = getState();
     const files = getFiles(state);
     const loaded = getLoadedFiles(state);
+
+    // Only fetch files if needed.
     if(files && !loaded){
       Object.keys(files).forEach(function (filename){
         dispatch(fetchFile(state.params, filename));
@@ -59,9 +62,9 @@ function fetchFile(params, filename){
   return function (dispatch, getState){
     var url = [
       "units",
-      "unit-" + params.unit,
-      "module-" + params.module,
-      "example-" + params.example,
+      "unit-" + twoDigits(params.unit),
+      "module-" + twoDigits(params.module),
+      "example-" + twoDigits(params.example),
       filename
     ].join("/");
     request(url).get(function (xhr){
@@ -109,7 +112,6 @@ export function save(){
     request("save")
       .header("Content-Type", "application/json")
       .post(JSON.stringify(payload), function (xhr){
-        //console.log(xhr.responseText);
         dispatch(saved(xhr.responseText));
       });
   };
