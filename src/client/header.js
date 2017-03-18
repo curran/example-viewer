@@ -25,13 +25,9 @@ function extractTitle(html) {
   return matches ? matches[1] : "Untitled";
 }
 
-const spacer = component("div", "header-spacer");
-
 // User interface component for the header text (top left).
-const header = component("div", "header")
+export default component("div", "header")
   .render(function (state){
     breadcrumbs(this, state.params);
     title(this, state);
   });
-
-export { header, spacer };

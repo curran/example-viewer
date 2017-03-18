@@ -1,7 +1,8 @@
 import { select } from "d3-selection";
 import { component } from "d3-component";
 import router from "./router";
-import { header, spacer } from "./header";
+import header from "./header";
+import { spacerTop, spacerBottom } from "./spacers";
 import editors from "./editors";
 import runner from "./runner";
 import keyboard from "./keyboard";
@@ -14,8 +15,9 @@ export default component("div")
         .call(router, d)
         .call(keyboard, d)
         .call(header, d.state)
-        .call(spacer)
+        .call(spacerTop)
         .call(editors, d)
+        .call(spacerBottom)
         .call(runner, d.state)
         .call(notifier, d.state);
   });
