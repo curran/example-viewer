@@ -1,6 +1,5 @@
 var fs = require("fs");
 var path = require("path");
-var twoDigits = d3.format("02.0f");
 
 function updateIndexJSON(){
   var json = {
