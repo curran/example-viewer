@@ -47,13 +47,14 @@ function listModules(unit, dir){
   return modules.map(function (module){
     return {
       name: module,
-      examples: listExamples(unit, module)
+      examples: listExamples(unit, module, path.join(dir, module))
     };
   });
 }
 
-function listExamples(unit, module){
-  var examples = fs.readdirSync("units/" + unit + "/" + module);
+function listExamples(unit, module, dir){
+  var examples = fs.readdirSync("units/" + unit + "/" + module)
+    .map(renameIfNeeed(dir));
   return examples.map(function (example){
     return {
       name: example,
