@@ -1,6 +1,7 @@
 import { component } from "d3-component";
 import { next, previous, save, insert } from "./actions";
 
+// Translates global keyboard events into dispatched actions.
 export default component("div")
   .create(function ({ dispatch }){
     window.addEventListener("keydown", function (e){
@@ -25,7 +26,3 @@ export default component("div")
       }
     });
   });
-
-//  // Translates global keyboard events into dispatched actions.
-//  function Keyboard(dispatch, actions){
-//  }
