@@ -10,6 +10,8 @@ var mkdirp = require("mkdirp");
 var path = require("path");
 var async = require("async");
 var updateIndexJSON = require("./updateIndexJSON");
+var examplePath = require("../common/examplePath");
+
 var app = express();
 
 app.use(bodyParser.json());
@@ -21,12 +23,7 @@ app.post("/save", function (req, res){
         fileNames = Object.keys(files);
 
   async.each(fileNames, function (fileName, callback){
-    const directory = path.join(
-            "units",
-            "unit-" + params.unit,
-            "module-" + params.module,
-            "example-" + params.example
-          ),
+    const directory = examplePath(params),
           filePath = path.join(directory, fileName),
           content = files[fileName];
 

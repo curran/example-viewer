@@ -1,8 +1,6 @@
 import { json, request } from "d3-request";
-import { format } from "d3-format";
 import { getFiles, getLoadedFiles } from "./getFiles";
-
-const twoDigits = format("02.0f");
+import examplePath from "../common/examplePath";
 
 // Redux action creators.
 
@@ -61,10 +59,7 @@ function fetchFiles(params){
 function fetchFile(params, filename){
   return function (dispatch, getState){
     var url = [
-      "units",
-      "unit-" + twoDigits(params.unit),
-      "module-" + twoDigits(params.module),
-      "example-" + twoDigits(params.example),
+      examplePath(params),
       filename
     ].join("/");
     request(url).get(function (xhr){
