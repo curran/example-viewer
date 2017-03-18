@@ -36,35 +36,35 @@ function listUnits(dir){
   return units.map(function (unit){
     return {
       name: unit,
-      modules: listModules(unit, path.join(dir, unit))
+      modules: listModules(path.join(dir, unit))
     };
   });
 }
 
-function listModules(unit, dir){
-  var modules = fs.readdirSync("units/" + unit)
+function listModules(dir){
+  var modules = fs.readdirSync(dir)
     .map(renameIfNeeed(dir));
   return modules.map(function (module){
     return {
       name: module,
-      examples: listExamples(unit, module, path.join(dir, module))
+      examples: listExamples(path.join(dir, module))
     };
   });
 }
 
-function listExamples(unit, module, dir){
-  var examples = fs.readdirSync("units/" + unit + "/" + module)
+function listExamples(dir){
+  var examples = fs.readdirSync(dir)
     .map(renameIfNeeed(dir));
   return examples.map(function (example){
     return {
       name: example,
-      files: listFiles(unit, module, example)
+      files: listFiles(path.join(dir, example))
     };
   });
 }
 
-function listFiles(unit, module, example){
-  var files = fs.readdirSync("units/" + unit + "/" + module + "/" + example);
+function listFiles(dir){
+  var files = fs.readdirSync(dir);
   var filesIndex = {};
   files.forEach(function (file){
     filesIndex[file] = false;
