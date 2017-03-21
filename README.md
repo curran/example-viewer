@@ -1,22 +1,25 @@
 # example-viewer
 A presentation tool for code examples. Built using [Redux](http://redux.js.org/) and [D3](https://d3js.org/).
 
-#[Try it out!](https://curran.github.io/example-viewer/#1/1/3)
+**[Try it out!](https://curran.github.io/d3-in-motion/#1/4/9)**
+
+[![image](https://cloud.githubusercontent.com/assets/68416/24115030/1a8ce99c-0dc8-11e7-8608-764fab3e7454.png)](https://curran.github.io/d3-in-motion/#1/4/9)
+
+The above link shows examples in [d3-in-motion](https://github.com/curran/d3-in-motion), a project containing examples only, that uses this example-viewer package for presentation.
+
+Features:
 
  * CTRL + Right/Left arrow keys to navigate between examples.
  * Live code editing environment with instant feedback.
  * Click on a number to get a slider.
  * Click on hex colors to get a color picker.
- * Flicker-free re-rendering using iFrame double buffering.
-
-[![image](https://cloud.githubusercontent.com/assets/68416/22593539/0b50839a-ea45-11e6-8c9d-02f209b83a4a.png)](https://curran.github.io/example-viewer/#1/1/3)
 
 # For Authors
 
 This tool is not only for presentation, but also for creation.
 
  * CTRL + S will save the current example
- * CTRL + Right, then CTRL + S will create a new example
+ * CTRL + I create (insert) a new example
 
 For these to work, you'll need to start the server locally with
 
