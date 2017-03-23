@@ -4,11 +4,20 @@ import editor from "./editor";
 import { getFilesSorted } from "./getFiles";
 import { editFile } from "./actions";
 
-const label = component("div", "editor-filename-label");
+const label = component("div", "editor-filename-label")
+  .render(function (text){
+
+    // Workaround for GitHub Pages not hosting dotfiles.
+    if(text === "_babelrc"){
+      text = ".babelrc";
+    }
+
+    d3.select(this).text(text);
+  });
 
 const labeledEditor = component("div")
   .render(function ({ name, content, state, dispatch}){
-    label(this).text(name);
+    label(this, name);
     editor(this, {
       content: content,
       onChange: function (newContent){
