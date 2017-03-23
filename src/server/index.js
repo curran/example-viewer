@@ -15,7 +15,9 @@ var examplePath = require("../common/examplePath");
 var app = express();
 
 app.use(bodyParser.json());
-app.use(express.static("."));
+app.use(express.static(".", {
+  dotfiles: "allow"
+}));
 
 app.post("/save", function (req, res){
   const params = req.body.params,
