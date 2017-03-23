@@ -63,7 +63,10 @@ function listExamples(dir){
 }
 
 function listFiles(dir){
-  var files = fs.readdirSync(dir);
+  var files = fs.readdirSync(dir)
+    .filter(function (file){
+      return file !== "node_modules";
+    });
   var filesIndex = {};
   files.forEach(function (file){
     filesIndex[file] = false;
