@@ -12,7 +12,7 @@ const label = component("div", "editor-filename-label")
       text = ".babelrc";
     }
 
-    d3.select(this).text(text);
+    select(this).text(text);
   });
 
 const labeledEditor = component("div")
