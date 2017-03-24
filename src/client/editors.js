@@ -8,7 +8,7 @@ const label = component("div", "editor-filename-label")
   .render(function (text){
 
     // Workaround for GitHub Pages not hosting dotfiles.
-    if(text === "_babelrc"){
+    if(text === "babelrc.json"){
       text = ".babelrc";
     }
 
