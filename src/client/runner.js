@@ -19,43 +19,51 @@ const iframe = component("iframe", "shadow runner")
       select(this).attr("srcdoc", source);
     }
   });
-
-//const previousHtml = "";
-//const currentHtml = "";
-//const root;
-//const needsSwap = false;
 const framesPerSecond = 10; // Seems to be the fastest rate without flicker.
 
-const buffers = local();
 const filesLocal = local();
 
 export default component("div")
   .create(function (){
     // The notion of double buffering is used to minimize flickering.
     // These constants represent z-index values for iframe buffers.
-    const BACK = 3; // CodeMirror's z-index is 2; this will be above that.
-    const FRONT = 4; // This is for the "front buffer"; visible to the user.
-    buffers.set(this, [BACK, FRONT]);
+    const BACK = 4; // The header z-index is 3; this will be above that.
+    const FRONT = 5; // This is for the "front buffer"; visible to the user.
+    let buffers = [BACK, FRONT];
+    let needsSwap = false;
 
     setInterval(() => {
 
-      // The existence of these files here
-      // indicates that the buffers should be swapped.
-      const files = filesLocal.get(this);
-      if(files){
-        console.log("needs swap");
-        console.log(files);
+      // Swap the z-index of buffers if needed.
+      if(needsSwap){
+        buffers = buffers.reverse();
+        iframe(this, buffers);
+      }
 
-        // Render the content
+//const previousHtml = "";
+//const currentHtml = "";
+//const root;
+
+      // The existence of a value in filesLocal
+      // indicates that the content has changed.
+      const files = filesLocal.get(this);
+
+      // Set the content of the back buffer
+      // if the content has changed.
+      if(files){
+
+        // Set the content of the back buffer.
         const template = files["index.html"].content;
         const source = magicSandbox(template, files);
-        iframe(this, { source, z: FRONT });
-        //iframe(this, buffers.map(z => {
-        //  source: z === BACK ? source : null,
-        //  z
-        //});
+        iframe(this, buffers.map(z => ({
+          source: (z === BACK ? source : null),
+          z
+        })));
 
-        // Signal that the content has been loaded into a buffer.
+        // Signal that buffers should be swapped on the next frame.
+        needsSwap = true;
+
+        // Signal that the content has been rendered into a buffer.
         filesLocal.set(this, null);
       }
     }, 1000 / framesPerSecond);
