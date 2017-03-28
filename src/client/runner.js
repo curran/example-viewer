@@ -13,19 +13,53 @@ const iframe = component("iframe", "shadow runner")
         .attr("frameborder", "0px") // We'll have a shadow instead of a border.
         .attr("scrolling", "no"); // Disable scrolling to match with bl.ocks.org.
   })
-  .render(function ({ source, z}){
-    select(this)
-        .attr("srcdoc", source)
-        .style("z-index", z);
+  .render(function ({ source, z }){
+    select(this).style("z-index", z);
+    if(source){
+      select(this).attr("srcdoc", source);
+    }
   });
 
-// TODO fix flickering.
-//const buffers = local();
+//const previousHtml = "";
+//const currentHtml = "";
+//const root;
+//const needsSwap = false;
+const framesPerSecond = 10; // Seems to be the fastest rate without flicker.
+
+const buffers = local();
+const filesLocal = local();
 
 export default component("div")
-  //.create(function (){
-  //  
-  //})
+  .create(function (){
+    // The notion of double buffering is used to minimize flickering.
+    // These constants represent z-index values for iframe buffers.
+    const BACK = 3; // CodeMirror's z-index is 2; this will be above that.
+    const FRONT = 4; // This is for the "front buffer"; visible to the user.
+    buffers.set(this, [BACK, FRONT]);
+
+    setInterval(() => {
+
+      // The existence of these files here
+      // indicates that the buffers should be swapped.
+      const files = filesLocal.get(this);
+      if(files){
+        console.log("needs swap");
+        console.log(files);
+
+        // Render the content
+        const template = files["index.html"].content;
+        const source = magicSandbox(template, files);
+        iframe(this, { source, z: FRONT });
+        //iframe(this, buffers.map(z => {
+        //  source: z === BACK ? source : null,
+        //  z
+        //});
+
+        // Signal that the content has been loaded into a buffer.
+        filesLocal.set(this, null);
+      }
+    }, 1000 / framesPerSecond);
+  })
   .render(function (state){
     const loadedFiles = getLoadedFiles(state);
     if(loadedFiles){
@@ -39,22 +73,12 @@ export default component("div")
         };
       });
 
-      const template = loadedFiles["index.html"];
-      const source = magicSandbox(template, files);
-      iframe(this, {source, z: 4});
+      filesLocal.set(this, files);
     }
   });
 
 //  // User interface component for the running example (top right).
 //  function Runner(){
-//    var previousHtml = "",
-//        currentHtml = "",
-//        BACK = 3, // CodeMirror's z-index is 2, this will be above that.
-//        FRONT = 4, // This is for the "front buffer", visible to the user.
-//        buffers = [BACK, FRONT],
-//        root,
-//        needsSwap = false,
-//        framesPerSecond = 10; // Seems to be the fastest rate without flicker.
 //
 //    setInterval(function (){
 //      if(root){
