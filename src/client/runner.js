@@ -19,8 +19,8 @@ const iframe = component("iframe", "shadow runner")
       select(this).attr("srcdoc", source);
     }
   });
-const framesPerSecond = 10; // Seems to be the fastest rate without flicker.
 
+const framesPerSecond = 10; // Seems to be the fastest rate without flicker.
 const filesLocal = local();
 
 export default component("div")
@@ -29,7 +29,7 @@ export default component("div")
     // These constants represent z-index values for iframe buffers.
     const BACK = 4; // The header z-index is 3; this will be above that.
     const FRONT = 5; // This is for the "front buffer"; visible to the user.
-    let buffers = [BACK, FRONT];
+    let buffers = [{ z: BACK }, { z: FRONT }];
     let needsSwap = false;
 
     setInterval(() => {
@@ -38,11 +38,8 @@ export default component("div")
       if(needsSwap){
         buffers = buffers.reverse();
         iframe(this, buffers);
+        needsSwap = false;
       }
-
-//const previousHtml = "";
-//const currentHtml = "";
-//const root;
 
       // The existence of a value in filesLocal
       // indicates that the content has changed.
@@ -55,9 +52,8 @@ export default component("div")
         // Set the content of the back buffer.
         const template = files["index.html"].content;
         const source = magicSandbox(template, files);
-        iframe(this, buffers.map(z => ({
-          source: (z === BACK ? source : null),
-          z
+        iframe(this, buffers.map(buffer => Object.assign({}, buffer, {
+          source: buffer.z === BACK ? source : null
         })));
 
         // Signal that buffers should be swapped on the next frame.
@@ -84,32 +80,3 @@ export default component("div")
       filesLocal.set(this, files);
     }
   });
-
-//  // User interface component for the running example (top right).
-//  function Runner(){
-//
-//    setInterval(function (){
-//      if(root){
-//        if(needsSwap){
-//          buffers = buffers.reverse();
-//          root.selectAll(".runner").data(buffers)
-//            .style("z-index", function (z) { return z; });
-//          needsSwap = false;
-//        }
-//        if(currentHtml !== previousHtml){
-//          previousHtml = currentHtml;
-//          root.selectAll(".runner")
-//            .filter(function (z){ return z === BACK; })
-//            .attr("srcdoc", currentHtml);
-//          needsSwap = true;
-//        }
-//      }
-//    }, 1000 / framesPerSecond);
-//
-//    return function (selection, state){
-//      root = selection;
-//      root.selectAll(".runner").data(buffers)
-//        .enter().append("iframe")
-//      currentHtml = state.html;
-//    };
-//  }
