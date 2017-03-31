@@ -20,7 +20,7 @@ const iframe = component("iframe", "shadow runner")
     }
   });
 
-const framesPerSecond = 8; // Seems to be the fastest rate without flicker.
+const framesPerSecond = 6; // Seems to be the fastest rate without flicker.
 const filesLocal = local();
 
 export default component("div")

@@ -63,7 +63,7 @@ function go(state, increment){
   return set("notify", {
     message: FORWARD ? "→" : "←",
     position: FORWARD ? 0.75 : 0.25,
-    size: 40,
+    size: 30,
     time: Date.now()
   }, state);
 }
