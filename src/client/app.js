@@ -19,5 +19,5 @@ export default component("div")
         .call(editors, d)
         .call(spacerBottom)
         .call(runner, d.state)
-        .call(notifier, d.state);
+//        .call(notifier, d.state);
   });
